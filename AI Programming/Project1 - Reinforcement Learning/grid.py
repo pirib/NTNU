@@ -5,7 +5,12 @@ Created on Fri Jan 15 14:07:25 2021
 @author: babay
 """
 
+# In-house stuff
 import node as N
+
+# For printing pretty stuff
+import networkx as nx
+import matplotlib.pyplot as plt 
 
 
 class Grid():
@@ -24,7 +29,6 @@ class Grid():
     # Size is as defined in hex-board-games.pdf
     def __init__(self, grid_type, size):
         self.create(grid_type, size)
-        
 
     def create(self, grid_type, size):
         
@@ -59,13 +63,36 @@ class Grid():
                             # TODO for some reason this appends a Node wrapped in a list 
                             node.neighbours.append( self.grid[p_n_c][p_n_r] )
                         except:
-                            pass
-                        
+                            pass                 
+
+    # TODO make this print in a nice way    
+    def print_grid(self):
+        
+        # The new graph for printing
+        G = nx.Graph()
+        
+        # Iterate through all the nodes, and add them as.. nodes
+        for row in self.grid:
+            for n in row:
+                G.add_node(n)
+        
+        # Iterate through each neighbour of the node, and add the edges in between. Networkx ignores already existing edges, which is nice
+        for row in self.grid:
+            for node in row:
+                for n in node.neighbours:
+                    G.add_edge(node,n)
+        
+        # Draws the nodes 
+        # NOTE: This assumes usage of Spyder
+        nx.draw(G)
+        plt.show()
+        
+        # https://networkx.org/documentation/stable/tutorial.html#drawing-graphs
 
     # Debug
     
     # Gives a nice little representation of the grid
-    def print_grid(self):
+    def print_simple(self):
         for row in self.grid:
             for node in row:
                 print("*", end = "")
@@ -73,7 +100,7 @@ class Grid():
 
     # Prints every Node's neigbhours in the grid
     def print_neighbours(self):
-        for row in test.grid:
+        for row in self.grid:
             for n in row:
                 n.print_neighbours()
         
@@ -81,9 +108,8 @@ class Grid():
     
     
     
-test = Grid(0,2)
-test.print_grid()
-
+test = Grid(0,4)
+test.print_simple()
 test.print_neighbours()
 
-
+test.print_grid()
