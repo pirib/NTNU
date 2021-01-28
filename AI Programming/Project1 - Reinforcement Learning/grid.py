@@ -18,10 +18,6 @@ class Grid():
     # Private
     grid = []
     
-    # Helper tuples indicating possible neighours' offsets [row, col]
-    offset_triangle = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
-    offset_diamond =  ( ( 0,-1) , (1,-1) , (1, 0) , (-1, 0) , (-1, 1) , (0, 1) )
-
     offset = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
 
     # Methods
@@ -60,17 +56,15 @@ class Grid():
                     if p_n_c >= 0 and p_n_r >= 0:
                         
                         try:
-                            # TODO for some reason this appends a Node wrapped in a list 
                             node.neighbours.append( self.grid[p_n_c][p_n_r] )
                         except:
                             pass                 
 
-    # TODO make this print in a nice way    
     def print_grid(self):
         
         # The new graph for printing
         G = nx.Graph()
-        
+
         # Iterate through all the nodes, and add them as.. nodes
         for row in self.grid:
             for n in row:
@@ -80,10 +74,11 @@ class Grid():
         for row in self.grid:
             for node in row:
                 for n in node.neighbours:
-                    G.add_edge(node,n)
+                    G.add_edge(node, n)
         
         # Draws the nodes 
-        # NOTE: This assumes usage of Spyder
+        # TODO: Sometimes the graph looks ... scrambled. Find out how to keep the lines parallel        
+        
         nx.draw(G)
         plt.show()
         
@@ -108,7 +103,7 @@ class Grid():
     
     
     
-test = Grid(0,4)
+test = Grid(1,4)
 test.print_simple()
 test.print_neighbours()
 

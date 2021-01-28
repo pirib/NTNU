@@ -12,7 +12,7 @@ class Node:
         self.col = col
         self.row = row
         self.empty = False
-        self.neighbours = list()        
+        self.neighbours = []      
         
 
     # Set nodes neighbours depending on its placement and total grid_size
@@ -25,4 +25,3 @@ class Node:
         for n in self.neighbours:
             print(n.col, n.row, " ", end = "")
         print()
-
