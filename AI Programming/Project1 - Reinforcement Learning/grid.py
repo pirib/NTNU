@@ -8,9 +8,13 @@ Created on Fri Jan 15 14:07:25 2021
 # In-house stuff
 import node as N
 
+# For general funciton
+import random
+
 # For printing pretty stuff
 import networkx as nx
 import matplotlib.pyplot as plt 
+
 
 
 class Grid():
@@ -23,8 +27,9 @@ class Grid():
     # Methods
     # Initialize the grid. grid_type - 0 for diamond, 1 for triangle
     # Size is as defined in hex-board-games.pdf
-    def __init__(self, grid_type, size):
+    def __init__(self, grid_type, size, point_num = 3):
         self.create(grid_type, size)
+        self.create_start_point(point_num)
 
     def create(self, grid_type, size):
         
@@ -60,15 +65,33 @@ class Grid():
                         except:
                             pass                 
 
+
+    def create_start_point(self, point_num):
+                
+        num = point_num
+        
+        while (num > 0):
+            # Initialize a random starting point        
+            random_node = random.choice( random.choice(self.grid) )
+            
+            if (random_node.empty == False):
+                random_node.empty = True
+                num -=  1
+
+
     def print_grid(self):
         
         # The new graph for printing
         G = nx.Graph()
 
+        # The colors used in the drawing
+        color_map = []
+
         # Iterate through all the nodes, and add them as.. nodes
         for row in self.grid:
             for n in row:
-                G.add_node(n)
+                G.add_node(n) 
+                color_map.append('black') if n.empty else color_map.append('blue')
         
         # Iterate through each neighbour of the node, and add the edges in between. Networkx ignores already existing edges, which is nice
         for row in self.grid:
@@ -79,7 +102,7 @@ class Grid():
         # Draws the nodes 
         # TODO: Sometimes the graph looks ... scrambled. Find out how to keep the lines parallel        
         
-        nx.draw(G)
+        nx.draw(G, node_color=color_map)
         plt.show()
         
         # https://networkx.org/documentation/stable/tutorial.html#drawing-graphs
@@ -103,7 +126,7 @@ class Grid():
     
     
     
-test = Grid(1,4)
+test = Grid(1,3)
 test.print_simple()
 test.print_neighbours()
 
