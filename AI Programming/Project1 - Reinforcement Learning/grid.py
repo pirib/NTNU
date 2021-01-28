@@ -22,51 +22,53 @@ class Grid():
     # Private
     grid = []
     
+    # Potential neighbours set for each node - (row, col)
     offset = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
 
     # Methods
     # Initialize the grid. grid_type - 0 for diamond, 1 for triangle
     # Size is as defined in hex-board-games.pdf
-    def __init__(self, grid_type, size, point_num = 3):
+    def __init__(self, grid_type, size, point_num = 1):
         self.create(grid_type, size)
-        self.create_start_point(point_num)
-
+        self.create_start_points(point_num)
+        
+    # Creates the grid
     def create(self, grid_type, size):
         
         # Initial, e.g. the first row of the grid - it is the same as size for diamond and 0 for the triangle (meaning there will be one "starting" node)
         init_size = size if grid_type == 0 else 0
             
         # Creating nodes
-        for c in range(size):
+        for r in range(size):
             # Create a new empty row
             self.grid.append([])
                 
             # Increase the row by 1 if we are creating a triangle board
             if (grid_type == 1): init_size = init_size + 1
             
-            for r in range (init_size):
+            for c in range (init_size):
                 # Make a new node and shove into the right column. The node is then accessible at grid[c][r].
-                self.grid[c].append( N.Node(r,c,size, grid_type) )
+                self.grid[r].append( N.Node(r,c,size, grid_type) )
 
         # The nodes are generated, so it is time to set its neighbours
         for row in self.grid:
             for node in row:
                 for o in self.offset:
                     
-                    # Potential neighbour coordinates
+                    # Potential neighbour row/col coordinates
                     p_n_r = node.row + o[0]
                     p_n_c = node.col + o[1]
                     
-                    # As long as potential coordinates are not negative (since Python allows using negative indexes...)
+                    # As long as potential coordinates are not negative (since Python allows usage negative indexes...)
                     if p_n_c >= 0 and p_n_r >= 0:
                         
                         try:
-                            node.neighbours.append( self.grid[p_n_c][p_n_r] )
+                            node.neighbours.append( self.grid[p_n_r][p_n_c] )
                         except:
                             pass                 
 
-
-    def create_start_point(self, point_num):
+    # Initializes empty points in the grid
+    def create_start_points(self, point_num):
                 
         num = point_num
         
@@ -78,21 +80,58 @@ class Grid():
                 random_node.empty = True
                 num -=  1
 
+    # Returns a dictionary of available actions given a grid (e.g. state)
+    def available_actions(self):
+        # For each empty node check along the 6 edges, with 2 depth, ensure that the one in between is filled.
+        actions = {}
+        
+        # Iterate through all the nodes
+        for row in self.grid:
+            for node in row:
+                
+                # Find an empty one
+                if (node.empty):
+                    
+                    # Check each non-empty neighbour
+                    for n in node.neighbours:
+                        if (not n.empty):
+                            # Find the offset (e.g. show on which edge we should look 1 more deeper to find a potential move)
+                            offset = [n.row - node.row, n.col - node.col]
+                            
+                            # Could potentiall make a move from these coordinates
+                            pmv = [ n.row + offset[0] , n.col + offset[1]]
+                            print(pmv)
+                            
+                            # We are looking at the node 1 step further in, which should be a neighbour of the n. If it isnt, then we are outside the grid.
+                            # That node should also not be empty, since that is the node we will be considering to move the peg from.
+                            try:
+                                # Check if that node is filled (and, well exists), as well as make sure that the coordinates are not negative
+                                if ( not self.grid[pmv[0]][pmv[1]].empty and pmv[0] >= 0 and pmv[1] >= 0 ):
+                                    actions[ pmv[0], pmv[1] , node.row, node.col ] = ""
+                                    
+                            except:
+                                pass
+        
+        # Returning the dictionary of actions
+        return actions    
 
+    # Prints out a pretty looking grid
     def print_grid(self):
         
         # The new graph for printing
         G = nx.Graph()
 
-        # The colors used in the drawing
+        # The colors and labels used in the drawing
         color_map = []
+        labels = {}
 
         # Iterate through all the nodes, and add them as.. nodes
         for row in self.grid:
             for n in row:
                 G.add_node(n) 
-                color_map.append('black') if n.empty else color_map.append('blue')
-        
+                color_map.append('red') if n.empty else color_map.append('green')
+                labels[n] = [n.row, n.col]
+                
         # Iterate through each neighbour of the node, and add the edges in between. Networkx ignores already existing edges, which is nice
         for row in self.grid:
             for node in row:
@@ -102,12 +141,12 @@ class Grid():
         # Draws the nodes 
         # TODO: Sometimes the graph looks ... scrambled. Find out how to keep the lines parallel        
         
-        nx.draw(G, node_color=color_map)
+        nx.draw(G, labels, labels=labels, node_color=color_map)
         plt.show()
-        
-        # https://networkx.org/documentation/stable/tutorial.html#drawing-graphs
 
-    # Debug
+
+
+    # For Debugging purposes
     
     # Gives a nice little representation of the grid
     def print_simple(self):
@@ -126,8 +165,8 @@ class Grid():
     
     
     
-test = Grid(1,3)
-test.print_simple()
-test.print_neighbours()
+test = Grid(0,4)
 
 test.print_grid()
+
+print(test.available_actions())
