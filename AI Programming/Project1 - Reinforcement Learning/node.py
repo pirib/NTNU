@@ -7,6 +7,8 @@ Created on Fri Jan 15 11:17:09 2021
 
 class Node:
     
+    # check out bit board
+    
     def __init__(self, row, col, grid_size, grid_type):
         # Setting parameters
         self.col = col

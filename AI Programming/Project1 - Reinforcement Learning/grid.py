@@ -10,6 +10,7 @@ import node as N
 
 # For general funciton
 import random
+import time
 
 # For printing pretty stuff
 import networkx as nx
@@ -26,11 +27,22 @@ class Grid():
     offset = ( (-1,-1) , (0,-1) , (-1,0) , ( 0, 1) , ( 1, 0) , (1, 1) )
 
     # Methods
+    
     # Initialize the grid. grid_type - 0 for diamond, 1 for triangle
     # Size is as defined in hex-board-games.pdf
     def __init__(self, grid_type, size, point_num = 1):
+        self.grid.clear()
         self.create(grid_type, size)
         self.create_start_points(point_num)
+        
+    # Destructor
+    def __del__(self): 
+        for row in self.grid:
+            for node in row:
+                del node
+        
+        del self
+        
         
     # Creates the grid
     def create(self, grid_type, size):
@@ -47,7 +59,7 @@ class Grid():
             if (grid_type == 1): init_size = init_size + 1
             
             for c in range (init_size):
-                # Make a new node and shove into the right column. The node is then accessible at grid[c][r].
+                # Make a new node and shove into the right row. The node is then accessible at grid[r][c].
                 self.grid[r].append( N.Node(r,c,size, grid_type) )
 
         # The nodes are generated, so it is time to set its neighbours
@@ -67,9 +79,10 @@ class Grid():
                         except:
                             pass                 
 
+
     # Initializes empty points in the grid
     def create_start_points(self, point_num):
-                
+        
         num = point_num
         
         while (num > 0):
@@ -79,11 +92,47 @@ class Grid():
             if (random_node.empty == False):
                 random_node.empty = True
                 num -=  1
+                
+    
+    # Pass an action in the form of a [ (from_node) , (over_node) , (to_node)  ]
+    # The function moves the grid into a new state
+    def make_move(self, action):
+        if action in self.get_available_actions():
+            
+            f_node_coor    = action[0]
+            over_node_coor = action[1]
+            to_node_coor   = action[2]            
+            
+            from_node = self.grid[f_node_coor[0]][f_node_coor[1]]
+            over_node = self.grid[over_node_coor[0]][over_node_coor[1]]
+            to_node   = self.grid[to_node_coor[0]][to_node_coor[1]]
+            
+            from_node.empty = True
+            over_node.empty = True
+            to_node.empty   = False
+            
+        else: 
+            raise Exception("Attempted to make an illegal move! Move is: " + action)
+
+
+    # Returns a compact state representation 
+    def get_state(self):
+        
+        # Any state can be represented as nodes with given coordinates, and whether it is empty or not
+        # Do not care about the neighbours
+        state = []
+        
+        for row in self.grid:
+            for node in row:
+                state.append( (node.row, node.col, node.empty) )
+                
+        return tuple(state)
+
 
     # Returns a dictionary of available actions given a grid (e.g. state)
-    def available_actions(self):
+    def get_available_actions(self):
         # For each empty node check along the 6 edges, with 2 depth, ensure that the one in between is filled.
-        actions = {}
+        actions = []
         
         # Iterate through all the nodes
         for row in self.grid:
@@ -100,21 +149,49 @@ class Grid():
                             
                             # Could potentiall make a move from these coordinates
                             pmv = [ n.row + offset[0] , n.col + offset[1]]
-                            print(pmv)
                             
                             # We are looking at the node 1 step further in, which should be a neighbour of the n. If it isnt, then we are outside the grid.
                             # That node should also not be empty, since that is the node we will be considering to move the peg from.
                             try:
                                 # Check if that node is filled (and, well exists), as well as make sure that the coordinates are not negative
                                 if ( not self.grid[pmv[0]][pmv[1]].empty and pmv[0] >= 0 and pmv[1] >= 0 ):
-                                    actions[ pmv[0], pmv[1] , node.row, node.col ] = ""
+                                    
+                                    # TODO find a better representation actions
+                                    # Action representation from node n0, over node n1, to node n2
+                                    
+                                    # action_representation = "%s,%s|%s,%s|%s,%s" % (pmv[0], pmv[1], n.row, n.col, node.row, node.col)
+                                    
+                                    action_representation = ((pmv[0], pmv[1]), (n.row, n.col), (node.row, node.col))
+                                    
+                                    actions.append(action_representation)
                                     
                             except:
                                 pass
         
         # Returning the dictionary of actions
-        return actions    
+        return tuple(actions)
 
+
+    # Returns True if there are no more moves left to do (e.g. the terminal state)
+    def is_terminal(self):
+        return not bool(self.get_available_actions())
+
+
+    # Returns number of remaining pegs
+    # TODO rewrite this so it doesnt use iteration
+    def remaining_pegs(self):
+        num_peg = 0
+        for row in self.grid:
+            for node in row:
+                if (not node.empty):
+                    num_peg += 1
+        return num_peg
+
+    # The environment returns 1000 if the terminal state reached is a solved puzzle, and 0 otherwise
+    def get_reward(self):         
+        return 1000 if (self.remaining_pegs() == 1) else 0
+
+    
     # Prints out a pretty looking grid
     def print_grid(self):
         
@@ -139,14 +216,12 @@ class Grid():
                     G.add_edge(node, n)
         
         # Draws the nodes 
-        # TODO: Sometimes the graph looks ... scrambled. Find out how to keep the lines parallel        
-        
+    
         nx.draw(G, labels, labels=labels, node_color=color_map)
         plt.show()
 
 
-
-    # For Debugging purposes
+    # For Debugging =============================================================
     
     # Gives a nice little representation of the grid
     def print_simple(self):
@@ -155,6 +230,7 @@ class Grid():
                 print("*", end = "")
             print()
 
+
     # Prints every Node's neigbhours in the grid
     def print_neighbours(self):
         for row in self.grid:
@@ -162,11 +238,25 @@ class Grid():
                 n.print_neighbours()
         
     
+    # End of the Class =============================================================
     
-    
-    
-test = Grid(0,4)
-
+"""    
+test = Grid(0,3)
 test.print_grid()
 
-print(test.available_actions())
+print(test.get_available_actions())
+print(test.is_terminal())
+ """  
+
+# Plays a game randmoly picking available actions
+
+def random_play():
+    play = Grid(0,4)
+    
+    while ( not play.is_terminal() ):
+        play.make_move( random.choice(  play.get_available_actions()  )  )
+        play.print_grid()
+        time.sleep(0.5)
+        
+    del play
+
