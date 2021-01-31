@@ -24,7 +24,7 @@ class RL():
     solved_puzzles = [0]
     
     
-    def __init__(self, grid_type, grid_size, episodes = 600):
+    def __init__(self, grid_type, grid_size, episodes = 1000):
         self.grid_type = grid_type
         self.grid_size = grid_size
         self.episodes = episodes
@@ -58,7 +58,6 @@ class RL():
             # self.actor.greed_rate = 1/(1 + episode)**0.5              # Results in higher number of solved puzzles, but also means less exploration
             
             
-            
             # Playing and learning until a terminal state is reached
             while (not self.state.is_terminal()):
                     
@@ -90,7 +89,7 @@ class RL():
         
     # Play the game greedily, e.g. full on greed policy
     # TODO this is shit, doesnt work, some code needs to be rewamped
-    def play(self, episodes=10):
+    def play(self, episodes=1000):
 
         solved = 0
         
