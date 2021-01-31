@@ -18,7 +18,7 @@ class Critic():
     # Constructor
     # Mode: 0 for tabular, 1 for neural network
     # TODO Mode doesnt do shit yet
-    def __init__(self, mode = 0, learning_step = 0.1, elig_rate = 0.5, discount = 0.09):
+    def __init__(self, mode = 0, learning_step = 0.1, elig_rate = 0.9, discount = 0.09):
         
         # Setting the private parameters
         self.mode = mode
@@ -29,7 +29,7 @@ class Critic():
         # Cleaning up the old state values
         self.state_value.clear()
         
-    # Sets all eligibility rates in the dictionary to 0
+    # Sets all eligibility rates in the dictionary to 0 and set visited to False
     def clear_elig(self):
         for key in self.state_value:
             self.state_value[key][1] = 0
@@ -40,7 +40,7 @@ class Critic():
     # TODO ehhh, like this? ^
     def add_vs(self, s):   
         if (not s in self.state_value):
-            self.state_value[s] = [ random.random() , 0, False] 
+            self.state_value[s] = [ 0 , 0, False] 
     
     # Returns value of a state, e.g. V(S)
     def v(self, state):
@@ -60,7 +60,7 @@ class Critic():
         
         # Calculate TD
         self.calculate_td(s, sp ,r)
-    
+        
         # Update the eligibility for s
         self.state_value[ s ][ 1 ] = 1
         self.state_value[ s ][ 2 ] = True
@@ -87,7 +87,7 @@ class Actor():
     
     
     # Constructor
-    def __init__(self, learning_step = 0.01, greed_rate = 0.1 , elig_rate = 0.5, discount = 0.09):
+    def __init__(self, learning_step = 0.1, greed_rate = 0.3 , elig_rate = 0.9, discount = 0.09):
         
         # Setting the private parameters
         self.learning_step = learning_step
@@ -100,7 +100,7 @@ class Actor():
     
     
     # Sets all eligibilirt rates in the dictionary to 0
-    # Also sets, visited this episode to 0
+    # Also sets, visited this episode to False
     def clear_elig(self):
         for key in self.saps:
             self.saps[key][1] = 0
@@ -108,29 +108,48 @@ class Actor():
     
         
     # TODO change this so the values are normalised and it becomes a prob distribution
-    # Current policy - returns an action based on e-greedy algorithm    
-    def policy(self, state, exploit):
+    # Current policy - returns an action based on e-greedy algorithm
+    def policy(self, state):
         
         # With a random chance greed_rate explore instead of exploit
-        if (random.random() < self.greed_rate and not exploit ):
+        if (random.random() < self.greed_rate):
+
             # Exploration choice
             return tuple( random.choice(state.get_available_actions()) )
-        
+            
         # Exploit move
         else:
+
             highest_a = float('-inf')
             result = None
+
             s = state.get_state()
             
-
-            for a in state.get_available_actions():
-                if ( self.saps[s,a][0] > highest_a):
+            for a in state.get_available_actions():  
+                if ( self.saps[s,a][0] > highest_a ):
                     highest_a = self.saps[s,a][0]
                     result = a
 
+                
             return tuple(result)
 
-    
+    # Deterministic policy
+    def det_policy(self, grid):
+        
+        s = grid.get_state()
+        
+        highest_a = float('-inf')
+        result = None
+        
+        for a in grid.get_available_actions():
+            # Checking for possiblity of an explored sate
+            if (s,a) in self.saps:
+                if ( self.saps[s,a][0] > highest_a ):
+                    highest_a = self.saps[s,a][0]
+                    result = a
+
+        return tuple(result)
+
     # Adds a sap if it didnt exist before
     def add_saps(self, state):   
         s = state.get_state()
@@ -152,11 +171,13 @@ class Actor():
         self.add_saps(state)
         
         # Let the policy decide on the action
-        a = self.policy(state, exploit)
+        a = self.policy(state)
         
-        # Update the eligibility for s,a
-        self.saps[s,a][1] = 1  # THIS DOESNT EXIST!
+        # Update the eligibility for s,a, and set visited True
+        self.saps[s,a][1] = 1  
         self.saps[s,a][2] = True
+        
+
         
         # Perform that action, thus moving to a new state 
         state.make_move(a)
@@ -176,7 +197,7 @@ class Actor():
         for key in self.saps:
             if (self.saps[key][2] == True):
                 self.saps[key][0] = self.saps[key][0] + self.learning_step*td*self.saps[key][1]
-                self.saps[key][1] = self.saps[key][1]*self.discount*self.elig_rate
+                self.saps[key][1] = self.discount*self.elig_rate*self.saps[key][1]
             
     
     

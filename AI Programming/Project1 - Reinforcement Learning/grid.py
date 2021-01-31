@@ -83,6 +83,14 @@ class Grid():
     # Initializes empty points in the grid
     def create_start_points(self, point_num):
         
+        # Testing ground =====================
+        self.grid[2][2].empty = True        
+        
+        # Deliverable note
+        # Starting in 1 2 or 2 1 in a 4 size diamond yields no solutions.
+        
+        # Testing ground =====================
+        """
         num = point_num
         
         while (num > 0):
@@ -92,7 +100,7 @@ class Grid():
             if (random_node.empty == False):
                 random_node.empty = True
                 num -=  1
-                
+        """      
     
     # Pass an action in the form of a [ (from_node) , (over_node) , (to_node)  ]
     # The function moves the grid into a new state
@@ -189,7 +197,7 @@ class Grid():
 
     # The environment returns 1000 if the terminal state reached is a solved puzzle, and 0 otherwise
     def get_reward(self):         
-        return 1000 if (self.remaining_pegs() == 1) else 0
+        return 100 if (self.remaining_pegs() == 1) else 0
 
     
     # Prints out a pretty looking grid
