@@ -87,7 +87,7 @@ class Actor():
     
     
     # Constructor
-    def __init__(self, learning_step = 0.1, greed_rate = 0.3 , elig_rate = 0.9, discount = 0.09):
+    def __init__(self, learning_step = 0.1, greed_rate = 0.5 , elig_rate = 0.9, discount = 0.09):
         
         # Setting the private parameters
         self.learning_step = learning_step
@@ -143,6 +143,7 @@ class Actor():
         
         for a in grid.get_available_actions():
             # Checking for possiblity of an explored sate
+            # TODO decide what to do with an unexpored state
             if (s,a) in self.saps:
                 if ( self.saps[s,a][0] > highest_a ):
                     highest_a = self.saps[s,a][0]

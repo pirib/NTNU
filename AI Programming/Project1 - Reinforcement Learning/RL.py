@@ -89,7 +89,7 @@ class RL():
         
     # Play the game greedily, e.g. full on greed policy
     # TODO this is shit, doesnt work, some code needs to be rewamped
-    def play(self, episodes=1000):
+    def play(self, episodes=50):
 
         solved = 0
         

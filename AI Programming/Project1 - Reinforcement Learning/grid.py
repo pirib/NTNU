@@ -34,6 +34,7 @@ class Grid():
         self.grid.clear()
         self.create(grid_type, size)
         self.create_start_points(point_num)
+
         
     # Destructor
     def __del__(self): 
@@ -100,7 +101,7 @@ class Grid():
             if (random_node.empty == False):
                 random_node.empty = True
                 num -=  1
-              
+        
     
     # Pass an action in the form of a [ (from_node) , (over_node) , (to_node)  ]
     # The function moves the grid into a new state
