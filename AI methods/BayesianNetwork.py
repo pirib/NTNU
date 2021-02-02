@@ -170,26 +170,28 @@ class BayesianNetwork:
             if not self.variables[variable_name].parents :
                 S.append(self.variables[variable_name]) 
         
+        edges = self.edges.copy()
+        
         # While S is not empty
         while S:
 
             n = S.pop()
             L.append(n)
             
-            # Edges are in a form [from node, to node]
+            # Edges are in a form [from node, to node]  <- dont mind this, it is for me
             # Iterating over the edges to find any that start from n 
-            for from_node in self.edges:
+            for from_node in edges:
 
                 if from_node == n :
                         
                     # Need to make a copy of the list so iteration doesnt fail
-                    temp = self.edges[from_node].copy()
+                    temp = edges[from_node].copy()
                     
                     # Removing the edge
                     for m in temp:
                         
                         # Removing that edge (from a list which is an item in the dictionary)
-                        self.edges[from_node].remove(m)
+                        edges[from_node].remove(m)
                                   
                         # Check if m has any incoming edges
                         if ( not has_incoming_edges(m) ):
@@ -208,11 +210,7 @@ class InferenceByEnumeration:
     def _enumeration_ask(self, X, evidence):
         # TODO: Implement Enumeration-Ask algortihm as described in Problem 4 b)
 
-        # Reminder:
-        # When mutable types (lists, dictionaries, etc.) are passed to functions in python
-        # it is actually passing a pointer to that variable. This means that if you want
-        # to make sure that a function doesn't change the variable, you should pass a copy.
-        # You can make a copy of a variable by calling variable.copy()
+
         pass
 
     def _enumerate_all(self, vars, evidence):
