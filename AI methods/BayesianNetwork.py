@@ -59,8 +59,7 @@ class Variable:
         if len(parents) != len(no_parent_states):
             raise ValueError("Number of parents must match number of length of list no_parent_states.")
 
-# WHY ON EARTH DID YOU DO 
-# THIS DOES NOT HELP THIS IS TERRIBLE
+# Dont do this
 # =============================================================================
 #     def __str__(self):
 #         """
@@ -197,8 +196,13 @@ class BayesianNetwork:
                         if ( not has_incoming_edges(m) ):
                             S.append(m)
 
+        # Dont really need this, but but
+        # Check if the graph is acyclic
+        for edge_key in edges:
+            if ( len ( edges[edge_key] ) != 0 ):                
+                    print("Acyclic graph detected!")
+                    raise
         return L
-
 
 
 class InferenceByEnumeration:
@@ -208,14 +212,67 @@ class InferenceByEnumeration:
         self.topo_order = bayesian_network.sorted_nodes()
 
     def _enumeration_ask(self, X, evidence):
-        # TODO: Implement Enumeration-Ask algortihm as described in Problem 4 b)
-
-
-        pass
+        # X - the querry variable
+        # E - observed values for variables E
+        # Evidence is basicalluy what comes after the pipe, e.g. given, what we know
+                
+        # Initially empty distribution over X 
+        # AKA True and False values for the queary variable X
+        Q = [] 
+        
+        # For True and False (as indicated above)
+        for state in (True, False):
+            
+            # Copying the evidence, so i can add upon it down the line
+            # Then it becomes KNOWLEDGE
+            knowledge = evidence.copy()
+            
+            # Is this a good idea?
+            # Adding a key with value of X
+            knowledge[X] = state
+            
+            Q.append(self._enumerate_all(self.topo_order, knowledge))
+                
+        # TODO This needs to be re normalized
+        return Q
 
     def _enumerate_all(self, vars, evidence):
-        # TODO: Implement Enumerate-All algortihm as described in Problem 4 b)
-        pass
+        
+        # Get the probability of Y given its parents (can be calculated since evidence about Y is existent)
+        def prob(Y, e):
+
+            # If Y has no parents, then we simply use the CPT of Y
+            if len(Y.parents_no) == 0:
+                return 
+            
+            # If Y does have parents
+            else:
+                return
+        
+        # Should sum all the probabilities
+        def sum_prob():
+            pass
+        
+        if len(vars) == 0:
+            return 1
+        
+        # Y is unovsorved/hidden variables 
+        # It is unobserved list, because evidence AND Y AND X make up the entire domain
+        Y = vars[0]
+
+        # The damn book is so badly explained here
+        
+        # Rest of the unobserved variables list
+        Y_rest = vars[1:len(1)]
+        
+        # If the hidden variable is in the evidence it means we have information on it, so use it down the line
+        if Y in evidence:
+            return ( prob(Y) * self._enumerate_all(Y_rest, evidence))
+        
+        # If it is not in the evidence, then we need to use the probability instead
+        else:
+            return (sum_prob(   ) * self._enumerate_all(Y_rest, evidence.copy()[Y]  ))
+            
 
     def query(self, var, evidence={}):
         """
@@ -275,6 +332,9 @@ def problem3c():
 #     print(f"Probability distribution, P({d3.name} | !{d4.name})")
 # =============================================================================
     # print(posterior)
+    
+    
+    
     return inference
 
 def monty_hall():
