@@ -150,6 +150,7 @@ class BayesianNetwork:
         self.edges[from_variable].append(to_variable)
 
     # Problem 3a
+    # Returns [A B D C]
     def sorted_nodes(self):
         
         def has_incoming_edges(variable):
@@ -211,6 +212,8 @@ class InferenceByEnumeration:
         self.bayesian_network = bayesian_network
         self.topo_order = bayesian_network.sorted_nodes()
 
+
+    # I started this but never got to finish it
     def _enumeration_ask(self, X, evidence):
         # X - the querry variable
         # E - observed values for variables E
@@ -238,13 +241,16 @@ class InferenceByEnumeration:
 
     def _enumerate_all(self, vars, evidence):
         
-        # Get the probability of Y given its parents (can be calculated since evidence about Y is existent)
+        # Get the probability of Y given its parents (can be calculated since evidence about Y is existent/Y's parents are in there)
         def prob(Y, e):
 
             # If Y has no parents, then we simply use the CPT of Y
             if len(Y.parents_no) == 0:
-                return 
-            
+                if evidence[Y] == 1:
+                    return self.bayesian_network.variables[Y.name][0]
+                else:
+                    return 1 - self.bayesian_network.variables[Y.name][0]
+                    
             # If Y does have parents
             else:
                 return
@@ -283,39 +289,42 @@ class InferenceByEnumeration:
         return Variable(var, self.bayesian_network.variables[var].no_states, q)
 
 
-bn = BayesianNetwork()
 
 
 def problem3c():
+    
     d1 = Variable('A', 2, [[0.8], [0.2]])
+    
     d2 = Variable('B', 2, [[0.5, 0.2],
                            [0.5, 0.8]],
                   parents=['A'],
                   no_parent_states=[2])
+    
     d3 = Variable('C', 2, [[0.1, 0.3],
                            [0.9, 0.7]],
                   parents=['B'],
                   no_parent_states=[2])
+    
     d4 = Variable('D', 2, [[0.6, 0.8],
                            [0.4, 0.2]],
                   parents=['B'],
                   no_parent_states=[2])
 
-# =============================================================================
-#     print(f"Probability distribution, P({d1.name})")
-#     print(d1)
-# 
-#     print(f"Probability distribution, P({d2.name} | {d1.name})")
-#     print(d2)
-# 
-#     print(f"Probability distribution, P({d3.name} | {d2.name})")
-#     print(d3)
-# 
-#     print(f"Probability distribution, P({d4.name} | {d2.name})")
-#     print(d4)
-# =============================================================================
 
-    #bn = BayesianNetwork()
+    print(f"Probability distribution, P({d1.name})")
+    print(d1)
+ 
+    print(f"Probability distribution, P({d2.name} | {d1.name})")
+    print(d2)
+
+    print(f"Probability distribution, P({d3.name} | {d2.name})")
+    print(d3)
+
+    print(f"Probability distribution, P({d4.name} | {d2.name})")
+    print(d4)
+
+
+    bn = BayesianNetwork()
 
     bn.add_variable(d1)
     bn.add_variable(d2)
@@ -326,22 +335,54 @@ def problem3c():
     bn.add_edge(d2, d4)
 
     inference = InferenceByEnumeration(bn)
-    # posterior = inference.query('C', {'D': 1})
+    posterior = inference.query('C', {'D': 1})
     
-# =============================================================================
-#     print(f"Probability distribution, P({d3.name} | !{d4.name})")
-# =============================================================================
-    # print(posterior)
+
+    print(f"Probability distribution, P({d3.name} | !{d4.name})")
+
+    print(posterior)
     
     
-    
-    return inference
+
 
 def monty_hall():
-    # TODO: Implement the monty hall problem as described in Problem 4c)
-    pass
+    # Read somewhere on piazza one could turn this in without 4b
+    # Dont know if it will work though, but creating a bayesian network from this is relatively straightforward
+    
+    # The doors
+    doors = Variable('Doors', 3, [[1/3], [1/3], [1/3]])
+    
+    # Guest choice
+    guest = Variable('Guest choice', 3, [[1/3],[1/3],[1/3]])
+    
+    # The host choice variable
+    host = Variable('Chosen by host', 3, 
+                                [[0, 0, 0, 0, 0.5, 1, 0, 1, 0.5], 
+                                [0.5, 0, 1, 0, 0, 0, 1, 0, 0.5],
+                                [0.5, 1, 0, 1, 0.5, 0, 0, 0, 0]],
+                            ['Doors', 'Guest choice'], [3, 3])
+    
+    # Create the bayesian network and add the variables
+    bn = BayesianNetwork()
+
+    # The vars
+    bn.add_variable(doors)
+    bn.add_variable(guest)
+    bn.add_variable(host)
+    
+    # The edges
+    bn.add_edge(doors, host)
+    bn.add_edge(guest, host)
+
+    # Inference
+    inference = InferenceByEnumeration(bn)
+    posterior = inference.query('Doors', [{'Guest': 0}, {'Host': 0}])
+
+
+    print(posterior)
+    
 
 
 if __name__ == '__main__':
-    fuck = problem3c()
-    # monty_hall()
+    problem3c()
+    monty_hall()
