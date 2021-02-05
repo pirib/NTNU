@@ -41,21 +41,21 @@ class SGA():
     # Individuals are a bitsring with the size individual_size
     def generate_initial_population(self):
         
-        def generate():
+        # I am so proud of this one line below
+        def generate_individual():
             return ''.join(str(i) for i in [random.randint(0,1) for i in range(self.individual_size) ])
         
+        # Generate the entire population
         for i in range(self.population_size):
-            self.current_population.append( generate() )
+            self.current_population.append( generate_individual() )
 
     
     # Taks b
     def select_parents(self):
-        
         pass
     
             
-    
-    
+
     # Task c
     # Creates offspring - combines mutation and recombination
     def create_offspring(self, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.1, mut_bitwise_p = 0.05 ):
@@ -63,9 +63,29 @@ class SGA():
         individual = None
         
         if recombination:
-            pass
+            
+            # TODO: Pick two parents
+            p1 = None
+            p2 = None
+            
+            # One-point crossover
+            if rec_type == 0:
+                # cp - crossover point 
+                # Pick a random point between 0 and len - 1
+                cp = random.randint(0, self.individual_size-1)
+                
+                offspring_1 = p1[:cp] + p2[cp:]
+                offspring_2 = p2[:cp] + p1[cp:]
+                
+            # Uniform crossover
+            elif rec_type == 1:
+                # TODO me next!
+                pass
+            
+            else:
+                Exception("Unrecognized recombination type in offspring creation.")
 
-        # There is a chance the 
+        # 
         if mutation:
             self.mutate( individual, mut_bitwise_p )
             
@@ -85,7 +105,7 @@ class SGA():
     # Simple bit string mutation
     
     # Iterates through the entire individual, and flips a bit with a chance mut_p
-    def mutation(self, individual, mut_p):
+    def mutate(self, individual, mut_p):
         for i in range( len(individual)):
             if random.random() < mut_p:            
                 individual = individual[:i] + str( int( not int(individual[i]))) + individual[i+1:]
