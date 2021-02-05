@@ -9,56 +9,65 @@ from math import sin
 import random
 
 
-# Bitstring individual
-class individual():
-        
-    def __init__(self, bitstring_size = 6):
-        self.size = bitstring_size
-        self.value = self.generate()    
-    
-    # I am so damn proud of this line
-    # Generates and returns a bitstring of size bitstring_size
-    def generate(self):
-        return ''.join(str(i) for i in [random.randint(0,1) for i in range(self.size) ])
-
-
-    def encode(self):
-        pass
-    
-    # Returns the phenotype of the individual (e.g integer)
-    def decode(self):
-        return int(self.value, 2)
-    
-    
-
 # Task e
 class SGA():
 
-    # The default values used are the ones that were found to be performance-wise most promising
-    def __init__(self, population_size = 1000 ):
-        self.population_size = population_size
-        
-        
+    # The list of all individuals
+    current_population = []
 
-    # Task a
-    def generate_initial_population(self):
-        pass
+    # The default values used are the ones that were found to be performance-wise most promising
     
+    
+    # Parameters list
+    # population_size   - how many individuals are kept at a given time
+    # individual_size   - how many bits are used to represent an individual
+    # selection_per     - the percentage of population that is selected on the parent selection step. The rest is discarded.
+    
+    def __init__(self, population_size = 1000, individual_size = 6, selection_per = 50 ):
+        
+        # Clear up the current population
+        self.clear_current_population()
+        
+        # Set the population size
+        self.population_size = population_size
+        self.individual_size = individual_size
+        
+        # Generate initial population
+        self.generate_initial_population()
+        
+        
+    # Task a
+    # Generates an initial population
+    # Individuals are a bitsring with the size individual_size
+    def generate_initial_population(self):
+        
+        def generate():
+            return ''.join(str(i) for i in [random.randint(0,1) for i in range(self.individual_size) ])
+        
+        for i in range(self.population_size):
+            self.current_population.append( generate() )
+
     
     # Taks b
     def select_parents(self):
+        
         pass
+    
+            
     
     
     # Task c
     # Creates offspring - combines mutation and recombination
-    def create_offspring(self, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_type = 0, mut_p = 0.1 ):
+    def create_offspring(self, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.1, mut_bitwise_p = 0.05 ):
         
-        if mutation:
-            pass
+        individual = None
         
         if recombination:
             pass
+
+        # There is a chance the 
+        if mutation:
+            self.mutate( individual, mut_bitwise_p )
             
         pass
     
@@ -68,6 +77,35 @@ class SGA():
         pass
     
     
+    # Fitness function that tests the fitness of the bitstring individual
+    def fitness_function(self, individual):
+        return sin( self.decode(individual) )
+                
+    
+    # Simple bit string mutation
+    
+    # Iterates through the entire individual, and flips a bit with a chance mut_p
+    def mutation(self, individual, mut_p):
+        for i in range( len(individual)):
+            if random.random() < mut_p:            
+                individual = individual[:i] + str( int( not int(individual[i]))) + individual[i+1:]
+                
+    
+    # Helpers
+    # =========================================================
+    
+    # Clears up the population array and deletes the individuals
+    def clear_current_population(self):
+        self.current_population.clear()
+    
+    # Returns the phenotype of the individual (e.g integer)
+    # Expects a bitstring
+    def decode(self, individual):
+        return int(individual, 2)
+
+    
+
+# ================================================================================================================== End of  class SGA()
     
     
 # Running the SGA
