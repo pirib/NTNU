@@ -5,6 +5,15 @@ Created on Fri Feb  5 10:50:48 2021
 @author: babay
 """
 
+# TODO list
+#
+#   Make the (μ, λ) Selection:
+#   Generate more children than parents (50% more?), discard all parents
+#   
+#
+# ==============
+
+
 # Libraries for functioning
 import numpy as np
 from math import sin
@@ -22,20 +31,26 @@ class SGA():
     # The list of all individuals
     current_population = []
 
+    # Analytics
+    mean_fitness = []
+
+
     # The default values used are the ones that were found to be performance-wise most promising
-    
     
     # Parameters list
     # population_size   - how many individuals are kept at a given time
     # individual_size   - how many bits are used to represent an individual
     # selection_per     - the percentage of population that is selected on the parent selection step. The rest is discarded.
     
-    def __init__(self, population_size = 100, individual_size = 7, selection_per = 50 ):
+    def __init__(self, iterations = 150, population_size = 100, individual_size = 7, selection_per = 50 ):
         
         # Clear up the current population
         self.clear_current_population()
         
-        # Set the population size
+        # Set SGA parameters
+        self.iterations = iterations
+        
+        # Set the population parameters
         self.population_size = population_size
         self.individual_size = individual_size
         
@@ -46,7 +61,7 @@ class SGA():
     # Task e
     
     # Run the algorithm "iterations" times 
-    def run(self, iterations = 50):
+    def run(self, iterations = 150, mating_random = True):
         
         # Snippet from here https://stackoverflow.com/questions/5389507/iterating-over-every-two-elements-in-a-list
         def pairwise(iterable):
@@ -56,20 +71,37 @@ class SGA():
         if iterations > 0:
             
             # Temp holders
-            parents = self.select_parents()         
+            parents = self.select_parents()       
+
             offspring = []
             
+            # Pairwise iteration, as in all parents participate in the mating, 
             # Iterate through pairs of parents and create offspring
-            for p1, p2 in pairwise(parents):
-                offspring.extend(self.create_offspring([p1,p2]))
+            if not mating_random:
+                for p1, p2 in pairwise(parents):
+                    offspring.extend(self.create_offspring([p1,p2]))
             
+            # Random parent selection
+            # Pick two from the parents mating pool randomly for mating
+            else:
+                for t in range(int(len(parents) * 1.5 )):
+                    offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
+                
             # Remove the old population
+            # Includes the old parents
             self.clear_current_population()
             
             # Add the new population - the old parents and the new offspring
-            self.current_population.extend(parents)
+            
             self.current_population.extend(offspring)
             
+            # Trims down current_population up to population_size by keeping only the fittest ones
+            self.select_survivors()
+            
+            # Analytics
+            # Accumulate mean fitness data
+            self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
+
             # Recursively call to ireate more            
             self.run(iterations - 1)
             
@@ -94,7 +126,7 @@ class SGA():
     # Will select most fitted individuals from the current_population. The selected pool will be 50% of the current_population size
     def select_parents(self, k = 10):
         
-        # Picks two fittest individuals from a pool of local_selected (that )
+        # Picks two fittest individuals from a pool of local_selected 
         def pick_two_fittest( local_selected, fit_selected):
             
             selected = []
@@ -112,7 +144,8 @@ class SGA():
                 # Remove the already selected individual
                 del local_selected[i]
                 del fit_selected[i]
-                
+            
+
             return selected
         
         # Keep the track of selected parents
@@ -173,7 +206,7 @@ class SGA():
             # Uniform crossover
             elif rec_type == 1:
                 # TODO me next if there is time
-                Exception("Uniform crossovere has not been implemented yet.")
+                Exception("Uniform crossover has not been implemented yet.")
             
             else:
                 Exception("Unrecognized recombination type in offspring creation.")
@@ -187,7 +220,10 @@ class SGA():
     
     
     # Task d
+    
+    # I opted out for (μ, λ) Selection
     def select_survivors(self):
+        
         pass
     
     
@@ -209,9 +245,10 @@ class SGA():
     # =========================================================
     
     # PLot the sine function
-    def plot(self):
+    def plot(self, print_counter = False):
         
-        plt.clf()
+        
+        plt.close()
         
         # For plotting the sine function
         sin_x = np.arange(0, 40*np.pi, 0.1)
@@ -222,11 +259,18 @@ class SGA():
         ind_y = [ self.fitness_function(i) for i in self.current_population]
         
         # Plot
+        plt.figure()
+        
         plt.plot(sin_x, sin_y)
         plt.plot(ind_x, ind_y, 'o')
     
         # Print number of occurences of individuals
-        print(Counter(self.current_population) )
+        if print_counter: print(Counter(self.current_population) )
+
+    def plot_data(self):
+        
+        plt.figure()
+        plt.plot( range(self.iterations), self.mean_fitness   )
 
     # Helpers
     # =========================================================
@@ -247,6 +291,6 @@ class SGA():
     
 # Running the SGA
 sga = SGA()
-sga.plot()
 sga.run()
 sga.plot()
+sga.plot_data()
