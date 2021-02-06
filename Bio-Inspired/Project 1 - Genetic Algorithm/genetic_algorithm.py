@@ -26,7 +26,7 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
     # selection_per     - the percentage of population that is selected on the parent selection step. The rest is discarded.
     
-    def __init__(self, population_size = 50, individual_size = 7, selection_per = 50 ):
+    def __init__(self, population_size = 100, individual_size = 7, selection_per = 50 ):
         
         # Clear up the current population
         self.clear_current_population()
@@ -55,9 +55,51 @@ class SGA():
 
     
     # Taks b
-    def select_parents(self):
-        pass
     
+    # Will select most fitted individuals from the current_population. The selected pool will be 50% of the current_population size
+    def select_parents(self, k = 10):
+        
+        def pick_two_fittest( local_selected, fit_selected):
+            
+            selected = []
+            
+            for t in range(2):
+                temp = float('-inf')
+                
+                for i in range(len(fit_selected)):
+                    if fit_selected[i] > temp:
+                        temp = i
+                
+                selected.append(local_selected[i])
+                del local_selected[i]
+                del fit_selected[i]
+                
+            return selected
+        
+        # Keep the track of selected parents
+        selected = []
+
+        # Tournament selection based on p.85 Eiben and Smith
+        while len(selected) < self.population_size/2:
+            
+            # Keeping a small pool of randomly selected individuals
+            local_selected = []
+                        
+            # Select k number of individuals randomly
+            for i in range(k):
+                local_selected .append( random.choice(self.current_population) )
+            
+            # Pick two fittest ones
+            
+            # Decode the individuals
+            fit_selected = [ self.decode(i) for i in local_selected ] 
+            
+            # Select the individuals
+            # Manual method for finding the fittest individual
+            selected.extend( pick_two_fittest(local_selected, fit_selected)  )
+
+        return selected
+        
             
     # Task c
     # Creates offspring - applies recombination to get offpsring from a set of two parents, then applies mutation
@@ -76,6 +118,7 @@ class SGA():
             
             # One-point crossover
             if rec_type == 0:
+
                 # cp - crossover point 
                 # Pick a random point between 0 and len - 1
                 cp = random.randint(0, self.individual_size-1)
@@ -102,6 +145,7 @@ class SGA():
                 o = self.mutate( o, mut_bitwise_p )
                             
         return offspring
+    
     
     # Task d
     def select_survivors(self):
