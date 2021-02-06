@@ -5,9 +5,11 @@ Created on Fri Feb  5 10:50:48 2021
 @author: babay
 """
 
+# Libraries
+import numpy as np
 from math import sin
 import random
-
+import matplotlib.pyplot as plt
 
 # Task e
 class SGA():
@@ -23,7 +25,7 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
     # selection_per     - the percentage of population that is selected on the parent selection step. The rest is discarded.
     
-    def __init__(self, population_size = 1000, individual_size = 6, selection_per = 50 ):
+    def __init__(self, population_size = 100, individual_size = 7, selection_per = 50 ):
         
         # Clear up the current population
         self.clear_current_population()
@@ -41,7 +43,7 @@ class SGA():
     # Individuals are a bitsring with the size individual_size
     def generate_initial_population(self):
         
-        # I am so proud of this one line below
+        # I am so damn proud of this one line below
         def generate_individual():
             return ''.join(str(i) for i in [random.randint(0,1) for i in range(self.individual_size) ])
         
@@ -110,6 +112,24 @@ class SGA():
             if random.random() < mut_p:            
                 individual = individual[:i] + str( int( not int(individual[i]))) + individual[i+1:]
                 
+                
+    # Analytics and Plotting        
+    # =========================================================
+    
+    # PLot the sine function
+    def plot(self):
+        
+        # For plotting the sine function
+        sin_x = np.arange(0, 40*np.pi, 0.1)
+        sin_y = np.sin(sin_x)
+        
+        # For plotting the individuals
+        ind_x = [ self.decode(i) for i in self.current_population]
+        ind_y = [ self.fitness_function(i) for i in self.current_population]
+        
+        # Plot
+        plt.plot(sin_x, sin_y)
+        plt.plot(ind_x, ind_y, 'o')
     
     # Helpers
     # =========================================================
@@ -131,3 +151,4 @@ class SGA():
 # Running the SGA
 sga = SGA()
 
+sga.plot()
