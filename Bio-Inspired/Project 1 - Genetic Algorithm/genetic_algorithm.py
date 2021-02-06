@@ -5,18 +5,22 @@ Created on Fri Feb  5 10:50:48 2021
 @author: babay
 """
 
-# Libraries
+# Libraries for functioning
 import numpy as np
 from math import sin
 import random
-import matplotlib.pyplot as plt
+
+
+# Analytics and plotting
+from matplotlib import pyplot as plt
+from collections import Counter
+
 
 # Task e
 class SGA():
 
     # The list of all individuals
     current_population = []
-    current_offspring = []
 
     # The default values used are the ones that were found to be performance-wise most promising
     
@@ -30,7 +34,6 @@ class SGA():
         
         # Clear up the current population
         self.clear_current_population()
-        self.clear_current_offspring()
         
         # Set the population size
         self.population_size = population_size
@@ -38,9 +41,41 @@ class SGA():
         
         # Generate initial population
         self.generate_initial_population()
+    
+    
+    # Task e
+    
+    # Run the algorithm "iterations" times 
+    def run(self, iterations = 50):
         
+        # Snippet from here https://stackoverflow.com/questions/5389507/iterating-over-every-two-elements-in-a-list
+        def pairwise(iterable):
+            a = iter(iterable)
+            return zip(a, a)
+        
+        if iterations > 0:
+            
+            # Temp holders
+            parents = self.select_parents()         
+            offspring = []
+            
+            # Iterate through pairs of parents and create offspring
+            for p1, p2 in pairwise(parents):
+                offspring.extend(self.create_offspring([p1,p2]))
+            
+            # Remove the old population
+            self.clear_current_population()
+            
+            # Add the new population - the old parents and the new offspring
+            self.current_population.extend(parents)
+            self.current_population.extend(offspring)
+            
+            # Recursively call to ireate more            
+            self.run(iterations - 1)
+            
         
     # Task a
+    
     # Generates an initial population
     # Individuals are a bitsring with the size individual_size
     def generate_initial_population(self):
@@ -59,6 +94,7 @@ class SGA():
     # Will select most fitted individuals from the current_population. The selected pool will be 50% of the current_population size
     def select_parents(self, k = 10):
         
+        # Picks two fittest individuals from a pool of local_selected (that )
         def pick_two_fittest( local_selected, fit_selected):
             
             selected = []
@@ -70,7 +106,10 @@ class SGA():
                     if fit_selected[i] > temp:
                         temp = i
                 
+                # Add the selected individual to the list
                 selected.append(local_selected[i])
+                
+                # Remove the already selected individual
                 del local_selected[i]
                 del fit_selected[i]
                 
@@ -87,7 +126,7 @@ class SGA():
                         
             # Select k number of individuals randomly
             for i in range(k):
-                local_selected .append( random.choice(self.current_population) )
+                local_selected.append( random.choice(self.current_population) )
             
             # Pick two fittest ones
             
@@ -107,7 +146,7 @@ class SGA():
 
         # Generational genetic algorithm
         # The entire population will replaced by the offspring                                
-        offspring =[]
+        offspring = []
 
         # Apply recombination if valied
         if recombination:
@@ -172,6 +211,8 @@ class SGA():
     # PLot the sine function
     def plot(self):
         
+        plt.clf()
+        
         # For plotting the sine function
         sin_x = np.arange(0, 40*np.pi, 0.1)
         sin_y = np.sin(sin_x)
@@ -184,17 +225,16 @@ class SGA():
         plt.plot(sin_x, sin_y)
         plt.plot(ind_x, ind_y, 'o')
     
+        # Print number of occurences of individuals
+        print(Counter(self.current_population) )
+
     # Helpers
     # =========================================================
     
     # Clears up the population array and deletes the individuals
     def clear_current_population(self):
         self.current_population.clear()
-    
-    # Clears up the population array and deletes the individuals
-    def clear_current_offspring(self):
-        self.current_offspring.clear()
-    
+        
     # Returns the phenotype of the individual (e.g integer)
     # Expects a bitstring
     def decode(self, individual):
@@ -207,5 +247,6 @@ class SGA():
     
 # Running the SGA
 sga = SGA()
-
+sga.plot()
+sga.run()
 sga.plot()
