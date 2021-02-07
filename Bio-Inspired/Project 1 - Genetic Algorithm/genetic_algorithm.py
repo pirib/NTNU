@@ -7,15 +7,19 @@ Created on Fri Feb  5 10:50:48 2021
 
 # TODO list
 #
-#   Stop itertsion if the mean average stops changing
+#   Stop iteration if the mean average stops changing
 #   Picking two fittest parents can be used with max(key=fitness_function)
+#   Do the scaling thing for individual size
+#
 #
 # ==============
 
+# Local libraries
+# import LinReg
 
 # Libraries for functioning
 import numpy as np
-from math import sin
+from math import sin, log
 import random
 
 
@@ -32,7 +36,7 @@ class SGA():
 
     # Analytics
     mean_fitness = []
-
+    entropy = []
 
     # The default values used are the ones that were found to be performance-wise most promising
     
@@ -41,7 +45,7 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
 
     
-    def __init__(self, iterations = 30, population_size = 200, individual_size = 7):
+    def __init__(self, iterations = 30, population_size = 100, individual_size = 10):
         
         # Clear up the current population
         self.clear_current_population()
@@ -60,46 +64,42 @@ class SGA():
     # Task e
     
     # Run the algorithm "iterations" times 
-    def run(self, iterations, mating_random = True):
+    def run(self, iterations, use_crowding = False, print_each_iter = False):
         
-        # Snippet from here https://stackoverflow.com/questions/5389507/iterating-over-every-two-elements-in-a-list
-        def pairwise(iterable):
-            a = iter(iterable)
-            return zip(a, a)
-        
+        # The termination conditions is based on iterations
         if iterations > 0:
             
             # Temp holders
             parents = self.select_parents()       
-
             offspring = []
-            
-            # Pairwise iteration, as in all parents participate in the mating, 
-            # Iterate through pairs of parents and create offspring
-            if not mating_random:
-                for p1, p2 in pairwise(parents):
-                    offspring.extend(self.create_offspring([p1,p2]))
             
             # Random parent selection
             # Pick two from the parents mating pool randomly for mating
-            else:
-                for t in range(int(len(parents) * 1.5 )):
-                    offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
+            for t in range(int(len(parents) * 1.5 )):
+                offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
                 
-            # Remove the old population
-            # Includes the old parents
-            self.clear_current_population()
-            
-            # Add the new population - the offspring
-            
-            self.current_population.extend(offspring)
-            
-            # Trims down current_population up to population_size by keeping only the fittest ones
-            self.select_survivors()
+            # Trims down current_population up to population_size 
+            self.select_survivors(parents, offspring, use_crowding)
             
             # Analytics
             # Accumulate mean fitness data
             self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
+            
+            
+            # Entropy
+            
+            # p0_all = i.count('0') / self.individual_size for i in self.current_population 
+            # p1_all = ( i.count('1') / self.individual_size for i in self.current_population ) 
+            
+            # p0.append( i * log(i,2)  for i in p0_all )            
+            # p1 = ( i * log(i,2)  for i in p1_all )
+
+            # self.entropy.append( p0 )
+            
+            
+            # Plotting
+            if print_each_iter:
+                self.plot()
 
             # Recursively call to ireate more            
             self.run(iterations - 1)
@@ -111,7 +111,7 @@ class SGA():
     # Individuals are a bitsring with the size individual_size
     def generate_initial_population(self):
         
-        # I am so damn proud of this one line below
+        # I am so damn proud of this one line below. Returns a randomly generate bitstring
         def generate_individual():
             return ''.join(str(i) for i in [random.randint(0,1) for i in range(self.individual_size) ])
         
@@ -173,7 +173,7 @@ class SGA():
         
             
     # Task c
-    # Creates offspring - applies recombination to get offpsring from a set of two parents, then applies mutation
+    # Creates offspring - applies recombination to get offpsring from a set of two parents, then applies mutation with probability mut_p
     def create_offspring(self, selected_parents, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.3, mut_bitwise_p = 0.1 ):
 
         # Generational genetic algorithm
@@ -219,24 +219,39 @@ class SGA():
     
     
     # Task d
-    
-    # I opted out for (μ, λ) Selection
-    def select_survivors(self):
+    # use_crowding indicates whether to use (μ, λ) Selection or crowding
+    def select_survivors(self, parents, offspring, use_crowding):
         
-        # Transfer the entire population from bitstring to int
-        survivors = self.current_population.copy()
-
-        # QUESTION Does sorting mess up with probabilities?
-        survivors.sort(key= self.fitness_function, reverse = True)
+        # (μ, λ) Selection
+        if not use_crowding:
+            # The entire pool of survivors are the parents and offspring
+            survivors = offspring
             
-        self.current_population = survivors[:self.population_size]
-       
+            # Remove the oldies
+            self.clear_current_population()
+            
+            # QUESTION Does sorting mess up with probabilities?
+            survivors.sort(key= self.fitness_function, reverse = True)
+            
+            # Trim down the survivors, keeping only the fittest ones
+            self.current_population = survivors[:self.population_size]
+            
+        # Restricted Tournament Selection
+        else:
+            pass
+            
     
     # Fitness function that tests the fitness of the bitstring individual
-    def fitness_function(self, individual):
-        return sin( self.decode(individual) )
-                
-    
+    # fun_type = 0 is for sin(), 1 is for linReg
+    def fitness_function(self, individual, fun_type = 0):
+        
+        if fun_type == 0:
+            return sin( self.decode(individual) )
+        
+        elif fun_type == 1:
+          #  return LinReg.get_fitness    
+          pass
+      
     # Simple bit string mutation - returns a mutated individual
     
     # Iterates through the entire individual, and flips a bit with a chance mut_p
@@ -252,8 +267,6 @@ class SGA():
     # PLot the sine function
     def plot(self, print_counter = False):
         
-        
-        plt.close()
         
         # For plotting the sine function
         sin_x = np.arange(0, 40*np.pi, 0.1)
@@ -272,10 +285,21 @@ class SGA():
         # Print number of occurences of individuals
         if print_counter: print(Counter(self.current_population) )
 
+
     def plot_data(self):
         
+        # Mean Fitness
         plt.figure()
         plt.plot( range(self.iterations), self.mean_fitness   )
+        plt.xlabel("Generations")
+        plt.ylabel("Mean Fitness")
+    
+        # Entropy
+        # plt.figure()
+        # plt.plot(range(self.iterations), self.entropy)
+        # plt.xlabel("Generations")
+        # plt.ylabel("Entropy")
+
 
     # Helpers
     # =========================================================
@@ -284,12 +308,12 @@ class SGA():
     def clear_current_population(self):
         self.current_population.clear()
         
-    # Returns the phenotype of the individual (e.g integer)
+    # Returns the phenotype of the individual scaled depending on the individual size
     # Expects a bitstring
     def decode(self, individual):
-        return int(individual, 2)
+        return int(individual, 2) * 128 / 2**(self.individual_size)
 
-
+    # Takes a decimal and returns the genotype (e.g. bitstring)
     def encode(self, decimal):
         return format(decimal, "b").zfill(self.individual_size)
     
