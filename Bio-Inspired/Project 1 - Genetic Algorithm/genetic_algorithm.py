@@ -45,7 +45,7 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
 
     
-    def __init__(self, iterations = 30, population_size = 100, individual_size = 10):
+    def __init__(self, iterations = 10, population_size = 200, individual_size = 10):
         
         # Clear up the current population
         self.clear_current_population()
@@ -64,7 +64,7 @@ class SGA():
     # Task e
     
     # Run the algorithm "iterations" times 
-    def run(self, iterations, use_crowding = False, print_each_iter = False):
+    def run(self, iterations, use_crowding = True, print_each_iter = False):
         
         # The termination conditions is based on iterations
         if iterations > 0:
@@ -75,7 +75,7 @@ class SGA():
             
             # Random parent selection
             # Pick two from the parents mating pool randomly for mating
-            for t in range(int(len(parents) * 1.5 )):
+            for t in range(int(len(parents) * 2 )):
                 offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
                 
             # Trims down current_population up to population_size 
@@ -222,7 +222,8 @@ class SGA():
     # use_crowding indicates whether to use (μ, λ) Selection or crowding
     def select_survivors(self, parents, offspring, use_crowding):
         
-        # (μ, λ) Selection
+        # (μ, λ) Selections
+        # p. 89 in Eiben and Smith
         if not use_crowding:
             # The entire pool of survivors are the parents and offspring
             survivors = offspring
@@ -237,8 +238,35 @@ class SGA():
             self.current_population = survivors[:self.population_size]
             
         # Restricted Tournament Selection
+        # P 198 in Simon
         else:
-            pass
+            
+            survivors = []
+            
+            # Picking 20% of the parents for comparison
+            k = int(self.population_size * 20 / 100 )
+            
+            # Each offpsring passes a tournament
+            for o in offspring:
+
+                def similarity_coef(i):
+                    # Teh coefficient is the difference of real value of the indivduals 
+                    return abs(self.decode(i)-self.decode(o))                
+
+                comparison_pool = []
+                # Picking k number of random individuals from the parents list
+                for i in range(k): comparison_pool.append( random.choice(parents) )
+            
+                # Find the parent that is most similar to the offspring 
+                p = min( comparison_pool, key=similarity_coef)
+                
+                # And replace if child's fitness is better
+                if self.fitness_function( p ) < self.fitness_function(o):
+                    survivors.append(o)
+                    parents.remove(p)
+            
+            self.current_population = survivors + parents
+            
             
     
     # Fitness function that tests the fitness of the bitstring individual
