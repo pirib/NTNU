@@ -7,10 +7,9 @@ Created on Fri Feb  5 10:50:48 2021
 
 # TODO list
 #
-#   Stop iteration if the mean average stops changing
+#   
 #   Picking two fittest parents can be used with max(key=fitness_function)
 #   
-#
 #
 # ==============
 
@@ -45,7 +44,19 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
 
     
-    def __init__(self, use_iterations = True, iterations = 10, use_crowding = True, population_size = 100, individual_size = 10, print_each_iter = False):
+    def __init__(self, 
+                 use_iterations = True, 
+                 iterations = 10, 
+                 use_crowding = False, 
+                 population_size = 100, 
+                 individual_size = 10, 
+
+                 
+                 mutation = True,
+                 prob_mutation = 0.1,
+                 
+                 print_each_iter = False
+                 ):
         
         # Clear up the current population
         self.clear_current_population()
@@ -75,9 +86,6 @@ class SGA():
     # Run the algorithm "iterations" times 
     def run(self, use_iterations, iterations, use_crowding, print_each_iter ):
         
-        # The termination conditions is based on iterations
-    
-        
         # Temp holders
         parents = self.select_parents()       
         offspring = []
@@ -94,22 +102,32 @@ class SGA():
         # Accumulate mean fitness data
         self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
         
-        print(len(self.current_population))        
         
         # Entropy
         
-        # p0_all = i.count('0') / self.individual_size for i in self.current_population 
-        # p1_all = ( i.count('1') / self.individual_size for i in self.current_population ) 
+        # Empty list with 
+        entropy = [0]* self.individual_size
         
-        # p0.append( i * log(i,2)  for i in p0_all )            
-        # p1 = ( i * log(i,2)  for i in p1_all )
+        # Checking number of 1's all individuals for each index
+        for individual in self.current_population:
+            for index in range(len(entropy)):
+                entropy[index] += int( individual[index] )
 
-        # self.entropy.append( p0 )
+        # Dividing each by the population size will give the probability of a bit being 1
+        for i in range(len(entropy)): 
+            entropy[i] = entropy[i] / len(self.current_population)
+            if entropy[i] == 0:
+                entropy[i] = 0.1
+
+        # Sum the probabilities 
+        
+        self.entropy.append( - sum( e*log(e,2) for e in entropy ) )
         
         
         # Plotting
         if print_each_iter:
             self.plot()
+
 
         # Recursively call to ireate more        
         if (use_iterations):
@@ -161,7 +179,6 @@ class SGA():
                 del local_selected[i]
                 del fit_selected[i]
             
-
             return selected
         
         # Keep the track of selected parents
@@ -340,10 +357,10 @@ class SGA():
         plt.ylabel("Mean Fitness")
     
         # Entropy
-        # plt.figure()
-        # plt.plot(range(self.iterations), self.entropy)
-        # plt.xlabel("Generations")
-        # plt.ylabel("Entropy")
+        plt.figure()
+        plt.plot(range(len(self.entropy)), self.entropy)
+        plt.xlabel("Generations")
+        plt.ylabel("Entropy")
 
 
     # Helpers
@@ -367,6 +384,24 @@ class SGA():
     
     
 # Running the SGA
-sga = SGA()
+sga = SGA(
+    # Algorithm specifics
+    use_iterations = False, 
+    iterations = 30, 
+    use_crowding = True, 
+    
+    # Population and Individual params
+    population_size = 100, 
+    individual_size = 7, 
+
+    # Mutation in offspring
+    mutation = True,
+    prob_mutation = 0.1,
+    
+
+    # Analytics
+    print_each_iter = False
+    )
+
 sga.plot()
 sga.plot_data()

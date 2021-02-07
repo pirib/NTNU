@@ -34,14 +34,22 @@ class LinReg():
         indexes = []
         for i, s in enumerate(bitstring):
             if s=='0':
-                indexes.append(i)
+                indexes.append(i)   
         arr = np.asarray(x)
         arr = np.delete(arr, indexes, axis=1)
         return arr
 
 
+df = pandas.read_csv('Dataset.csv', header=None)
+
+
 linreg = LinReg()
 
-df = pandas.read_csv('Dataset.csv')
+linreg.train(df, )
 
-linreg.get_fitness(df, 2)
+
+
+print( df.iloc[1] )
+
+
+print(linreg.get_fitness(df, df.iloc[2]))
