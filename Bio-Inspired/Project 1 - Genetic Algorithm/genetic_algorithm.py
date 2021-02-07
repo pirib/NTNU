@@ -51,7 +51,6 @@ class SGA():
                  population_size = 100, 
                  individual_size = 10, 
 
-                 
                  mutation = True,
                  prob_mutation = 0.1,
                  
@@ -116,12 +115,15 @@ class SGA():
         # Dividing each by the population size will give the probability of a bit being 1
         for i in range(len(entropy)): 
             entropy[i] = entropy[i] / len(self.current_population)
-            if entropy[i] == 0:
-                entropy[i] = 0.1
-
-        # Sum the probabilities 
         
-        self.entropy.append( - sum( e*log(e,2) for e in entropy ) )
+        # Sum the probabilities 
+         
+        self.entropy.append(0)
+        
+        # Ignoring the zeros (because log(0) = -inf, but it should be equated to zero, since we multiple by prob 0)
+        for e in entropy:
+            if e != 0:
+                self.entropy[-1] = self.entropy[-1] - e*log(e,2)
         
         
         # Plotting
@@ -356,6 +358,8 @@ class SGA():
         plt.xlabel("Generations")
         plt.ylabel("Mean Fitness")
     
+    def plot_entropy(self):
+        
         # Entropy
         plt.figure()
         plt.plot(range(len(self.entropy)), self.entropy)
@@ -383,25 +387,41 @@ class SGA():
 # ================================================================================================================== End of  class SGA()
     
     
-# Running the SGA
+# Running the SGA without crowding, with iterations
 sga = SGA(
     # Algorithm specifics
-    use_iterations = False, 
+    use_iterations = True, 
     iterations = 30, 
-    use_crowding = True, 
+    use_crowding = False, 
     
     # Population and Individual params
-    population_size = 100, 
-    individual_size = 7, 
+    population_size = 500, 
+    individual_size = 16, 
 
     # Mutation in offspring
     mutation = True,
     prob_mutation = 0.1,
     
-
     # Analytics
     print_each_iter = False
     )
 
 sga.plot()
 sga.plot_data()
+sga.plot_entropy()
+
+# Running the SGA with crowding, letting it stop once the mean average gets close enough to 1
+sga_crowding = SGA(
+    use_iterations = False,
+    use_crowding = True,
+    
+    # Population and Individual params
+    population_size = 500, 
+    individual_size = 16
+
+    )
+
+sga_crowding.plot()
+sga_crowding.plot_data()
+sga.plot_entropy()
+
