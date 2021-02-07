@@ -9,7 +9,7 @@ Created on Fri Feb  5 10:50:48 2021
 #
 #   Stop iteration if the mean average stops changing
 #   Picking two fittest parents can be used with max(key=fitness_function)
-#   Do the scaling thing for individual size
+#   
 #
 #
 # ==============
@@ -45,65 +45,80 @@ class SGA():
     # individual_size   - how many bits are used to represent an individual
 
     
-    def __init__(self, iterations = 10, population_size = 200, individual_size = 10):
+    def __init__(self, use_iterations = True, iterations = 10, use_crowding = True, population_size = 100, individual_size = 10, print_each_iter = False):
         
         # Clear up the current population
         self.clear_current_population()
         
         # Set SGA parameters
         self.iterations = iterations
+        self.use_iterations = use_iterations
+        self.use_crowding = use_crowding
+        
         
         # Set the population parameters
         self.population_size = population_size
         self.individual_size = individual_size
         
+        
+        # Set the Analytics parameters
+        self.print_each_iter = print_each_iter
+        
         # Generate initial population
         self.generate_initial_population()
+        
+        self.run( self.use_iterations, self.iterations, self.use_crowding, self.print_each_iter )
     
     
     # Task e
     
     # Run the algorithm "iterations" times 
-    def run(self, iterations, use_crowding = True, print_each_iter = False):
+    def run(self, use_iterations, iterations, use_crowding, print_each_iter ):
         
         # The termination conditions is based on iterations
-        if iterations > 0:
+    
+        
+        # Temp holders
+        parents = self.select_parents()       
+        offspring = []
+        
+        # Random parent selection
+        # Pick two from the parents mating pool randomly for mating
+        for t in range(int(len(parents) * 2 )):
+            offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
             
-            # Temp holders
-            parents = self.select_parents()       
-            offspring = []
-            
-            # Random parent selection
-            # Pick two from the parents mating pool randomly for mating
-            for t in range(int(len(parents) * 2 )):
-                offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
-                
-            # Trims down current_population up to population_size 
-            self.select_survivors(parents, offspring, use_crowding)
-            
-            # Analytics
-            # Accumulate mean fitness data
-            self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
-            
-            
-            # Entropy
-            
-            # p0_all = i.count('0') / self.individual_size for i in self.current_population 
-            # p1_all = ( i.count('1') / self.individual_size for i in self.current_population ) 
-            
-            # p0.append( i * log(i,2)  for i in p0_all )            
-            # p1 = ( i * log(i,2)  for i in p1_all )
+        # Trims down current_population up to population_size 
+        self.select_survivors(parents, offspring, use_crowding)
+        
+        # Analytics
+        # Accumulate mean fitness data
+        self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
+        
+        print(len(self.current_population))        
+        
+        # Entropy
+        
+        # p0_all = i.count('0') / self.individual_size for i in self.current_population 
+        # p1_all = ( i.count('1') / self.individual_size for i in self.current_population ) 
+        
+        # p0.append( i * log(i,2)  for i in p0_all )            
+        # p1 = ( i * log(i,2)  for i in p1_all )
 
-            # self.entropy.append( p0 )
-            
-            
-            # Plotting
-            if print_each_iter:
-                self.plot()
+        # self.entropy.append( p0 )
+        
+        
+        # Plotting
+        if print_each_iter:
+            self.plot()
 
-            # Recursively call to ireate more            
-            self.run(iterations - 1)
-            
+        # Recursively call to ireate more        
+        if (use_iterations):
+            if iterations > 0:
+                self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
+        else:
+            if (self.mean_fitness[-1] < 0.99):
+                self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
+        
         
     # Task a
     
@@ -123,7 +138,9 @@ class SGA():
     # Taks b
     
     # Will select most fitted individuals from the current_population. The selected pool will be 50% of the current_population size
-    def select_parents(self, k = 10):
+    def select_parents(self, k = 20):
+        
+        k = int(self.population_size * k / 100 )
         
         # Picks two fittest individuals from a pool of local_selected 
         def pick_two_fittest( local_selected, fit_selected):
@@ -151,7 +168,7 @@ class SGA():
         selected = []
 
         # Tournament selection based on p.85 Eiben and Smith
-        while len(selected) < self.population_size/2:
+        while len(selected) < self.population_size:
             
             # Keeping a small pool of randomly selected individuals
             local_selected = []
@@ -318,7 +335,7 @@ class SGA():
         
         # Mean Fitness
         plt.figure()
-        plt.plot( range(self.iterations), self.mean_fitness   )
+        plt.plot( range(len(self.mean_fitness)), self.mean_fitness   )
         plt.xlabel("Generations")
         plt.ylabel("Mean Fitness")
     
@@ -351,6 +368,5 @@ class SGA():
     
 # Running the SGA
 sga = SGA()
-sga.run(sga.iterations)
 sga.plot()
 sga.plot_data()
