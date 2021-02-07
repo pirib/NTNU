@@ -7,9 +7,8 @@ Created on Fri Feb  5 10:50:48 2021
 
 # TODO list
 #
-#   Make the (μ, λ) Selection:
-#   Generate more children than parents (50% more?), discard all parents
-#   
+#   Stop itertsion if the mean average stops changing
+#   Picking two fittest parents can be used with max(key=fitness_function)
 #
 # ==============
 
@@ -40,9 +39,9 @@ class SGA():
     # Parameters list
     # population_size   - how many individuals are kept at a given time
     # individual_size   - how many bits are used to represent an individual
-    # selection_per     - the percentage of population that is selected on the parent selection step. The rest is discarded.
+
     
-    def __init__(self, iterations = 150, population_size = 100, individual_size = 7, selection_per = 50 ):
+    def __init__(self, iterations = 30, population_size = 200, individual_size = 7):
         
         # Clear up the current population
         self.clear_current_population()
@@ -61,7 +60,7 @@ class SGA():
     # Task e
     
     # Run the algorithm "iterations" times 
-    def run(self, iterations = 150, mating_random = True):
+    def run(self, iterations, mating_random = True):
         
         # Snippet from here https://stackoverflow.com/questions/5389507/iterating-over-every-two-elements-in-a-list
         def pairwise(iterable):
@@ -91,7 +90,7 @@ class SGA():
             # Includes the old parents
             self.clear_current_population()
             
-            # Add the new population - the old parents and the new offspring
+            # Add the new population - the offspring
             
             self.current_population.extend(offspring)
             
@@ -175,7 +174,7 @@ class SGA():
             
     # Task c
     # Creates offspring - applies recombination to get offpsring from a set of two parents, then applies mutation
-    def create_offspring(self, selected_parents, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.1, mut_bitwise_p = 0.05 ):
+    def create_offspring(self, selected_parents, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.3, mut_bitwise_p = 0.1 ):
 
         # Generational genetic algorithm
         # The entire population will replaced by the offspring                                
@@ -224,8 +223,14 @@ class SGA():
     # I opted out for (μ, λ) Selection
     def select_survivors(self):
         
-        pass
-    
+        # Transfer the entire population from bitstring to int
+        survivors = self.current_population.copy()
+
+        # QUESTION Does sorting mess up with probabilities?
+        survivors.sort(key= self.fitness_function, reverse = True)
+            
+        self.current_population = survivors[:self.population_size]
+       
     
     # Fitness function that tests the fitness of the bitstring individual
     def fitness_function(self, individual):
@@ -284,6 +289,9 @@ class SGA():
     def decode(self, individual):
         return int(individual, 2)
 
+
+    def encode(self, decimal):
+        return format(decimal, "b").zfill(self.individual_size)
     
 
 # ================================================================================================================== End of  class SGA()
@@ -291,6 +299,6 @@ class SGA():
     
 # Running the SGA
 sga = SGA()
-sga.run()
+sga.run(sga.iterations)
 sga.plot()
 sga.plot_data()
