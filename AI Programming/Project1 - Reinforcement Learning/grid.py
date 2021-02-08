@@ -28,15 +28,26 @@ class Grid():
 
     # Methods
     
+    # Grid:
     # Initialize the grid. grid_type - 0 for diamond, 1 for triangle
     # Size is as defined in hex-board-games.pdf
-    def __init__(self, grid_type, size, point_num = 1):
+    
+    # Starting points
+
+    # start_point_num - number of starting points. Should be equal to the number 
+    # start_point_coor - coordinates of the starting points, expects a list of lists. If None is passed then starting points are created randomly within the grid.
+        
+    # Example
+    # Grid(0,5, start_point_coor = [ [1,1] ] )
+    # Will create a 5-size diamond grid with a peg missing at [1,1] <- Note how this was passed!    
+    
+    def __init__( self, grid_type, size, start_point_num = 1, start_point_coor = None ):
         self.grid.clear()
         self.create(grid_type, size)
-        self.create_start_points(point_num)
+        self.create_start_points(start_point_num, start_point_coor)
 
         
-    # Destructor
+    # Destructor - also removes all the nodes.
     def __del__(self): 
         for row in self.grid:
             for node in row:
@@ -63,7 +74,9 @@ class Grid():
                 # Make a new node and shove into the right row. The node is then accessible at grid[r][c].
                 self.grid[r].append( N.Node(r,c,size, grid_type) )
 
-        # The nodes are generated, so it is time to set its neighbours
+        # Setting nodes neighbours
+        
+        # For each node in the grid, check if there is a neighbour in one of the possible offset coordinates
         for row in self.grid:
             for node in row:
                 for o in self.offset:
@@ -81,28 +94,37 @@ class Grid():
                             pass                 
 
 
-    # Initializes empty points in the grid
-    def create_start_points(self, point_num):
-        
-        # Testing ground =====================
-        # self.grid[2][2].empty = True        
-        
-        # Deliverable note
-        # Starting in 1 2 or 2 1 in a 4 size diamond yields no solutions.
-        
-        # Testing ground =====================
-        
-        num = point_num
-        
-        while (num > 0):
-            # Initialize a random starting point        
-            random_node = random.choice( random.choice(self.grid) )
-            
-            if (random_node.empty == False):
-                random_node.empty = True
-                num -=  1
-        
+    # Initializes empty points in the grid. These are the "starting points" for the game.
+
+    # Deliverable note
+    # Starting in 1 2 or 2 1 in a 4 size diamond yields no solutions.
+    def create_start_points(self, point_num, points_coor):
     
+        # If no point_coordinates have been passed, the points are generated randomly   
+        # Number of points generates deoends on point_num
+        if points_coor == None:
+        
+            while (point_num > 0):
+                # Initialize a random starting point        
+                random_node = random.choice( random.choice(self.grid) )
+                
+                if (random_node.empty == False):
+                    random_node.empty = True
+                    point_num -=  1
+            
+        # If coordinates have been provided, then they become the starting points instead
+        # The parameters point_num is ignored
+        else:
+            
+            # Python's way of handling lists made me do this
+            coordinates = [ [None, None] ]
+            coordinates.append( points_coor )
+            
+            for coor in points_coor:
+                if ( coor[0] != None):
+                    self.grid[coor[0]][coor[1]].empty = True     
+                
+                
     # Pass an action in the form of a [ (from_node) , (over_node) , (to_node)  ]
     # The function moves the grid into a new state
     def make_move(self, action):
@@ -165,10 +187,7 @@ class Grid():
                                 # Check if that node is filled (and, well exists), as well as make sure that the coordinates are not negative
                                 if ( not self.grid[pmv[0]][pmv[1]].empty and pmv[0] >= 0 and pmv[1] >= 0 ):
                                     
-                                    # TODO find a better representation actions
                                     # Action representation from node n0, over node n1, to node n2
-                                    
-                                    # action_representation = "%s,%s|%s,%s|%s,%s" % (pmv[0], pmv[1], n.row, n.col, node.row, node.col)
                                     
                                     action_representation = ((pmv[0], pmv[1]), (n.row, n.col), (node.row, node.col))
                                     
@@ -187,7 +206,6 @@ class Grid():
 
 
     # Returns number of remaining pegs
-    # TODO rewrite this so it doesnt use iteration
     def remaining_pegs(self):
         num_peg = 0
         for row in self.grid:
@@ -249,16 +267,10 @@ class Grid():
     
     # End of the Class =============================================================
     
-"""    
-test = Grid(0,3)
-test.print_grid()
 
-print(test.get_available_actions())
-print(test.is_terminal())
- """  
 
 # Plays a game randmoly picking available actions
-
+# This is for fun
 def random_play():
     play = Grid(0,4)
     
@@ -268,4 +280,5 @@ def random_play():
         time.sleep(0.5)
         
     del play
+
 
