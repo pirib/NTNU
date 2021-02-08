@@ -40,16 +40,4 @@ class LinReg():
         return arr
 
 
-df = pandas.read_csv('Dataset.csv', header=None)
 
-
-linreg = LinReg()
-
-linreg.train(df, )
-
-
-
-print( df.iloc[1] )
-
-
-print(linreg.get_fitness(df, df.iloc[2]))

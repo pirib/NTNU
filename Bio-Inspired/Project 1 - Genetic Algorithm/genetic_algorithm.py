@@ -14,7 +14,8 @@ Created on Fri Feb  5 10:50:48 2021
 # ==============
 
 # Local libraries
-# import LinReg
+import LinReg as lr
+import pandas
 
 # Libraries for functioning
 import numpy as np
@@ -36,26 +37,36 @@ class SGA():
     # Analytics
     mean_fitness = []
     entropy = []
+    
 
     # The default values used are the ones that were found to be performance-wise most promising
     
     # Parameters list
     # population_size   - how many individuals are kept at a given time
     # individual_size   - how many bits are used to represent an individual
-
     
     def __init__(self, 
+                 
+                 # General settings
                  use_iterations = True, 
                  iterations = 10, 
                  use_crowding = False, 
+                 
+                 # Population parameters
                  population_size = 100, 
                  individual_size = 10, 
 
+                 # Fitness function 0 for sin, 1 for linreg
+                 fitness_function_type = 0,
+
+                 # Mutation
                  mutation = True,
                  prob_mutation = 0.1,
                  
+                 # Analytics
                  print_each_iter = False
                  ):
+        
         
         # Clear up the current population
         self.clear_current_population()
@@ -70,12 +81,24 @@ class SGA():
         self.population_size = population_size
         self.individual_size = individual_size
         
+        # Fitness param
+        self.fitness_type = fitness_function_type
+        
+        # Mutation
+        self.mutation = mutation
+        self.prob_mutation = prob_mutation
         
         # Set the Analytics parameters
         self.print_each_iter = print_each_iter
         
         # Generate initial population
         self.generate_initial_population()
+        
+        
+        # Linreg related
+        if (self.fitness_type == 1):
+            self.dataset = pandas.read_csv('Dataset.csv', header=None)
+            self.linreg = lr.LinReg()
         
         self.run( self.use_iterations, self.iterations, self.use_crowding, self.print_each_iter )
     
@@ -94,6 +117,18 @@ class SGA():
         for t in range(int(len(parents) * 2 )):
             offspring.extend(self.create_offspring( [random.choice( parents ), random.choice( parents )] ))                                
             
+        
+        # Apply mutation
+        if self.mutation:
+            for i in parents:
+                if random.random() < self.prob_mutation:                
+                    i = self.mutate(i, self.prob_mutation)
+                    
+            for i in offspring:
+                if random.random() < self.prob_mutation:                
+                    i = self.mutate(i, self.prob_mutation)
+        
+        
         # Trims down current_population up to population_size 
         self.select_survivors(parents, offspring, use_crowding)
         
@@ -124,7 +159,6 @@ class SGA():
         for e in entropy:
             if e != 0:
                 self.entropy[-1] = self.entropy[-1] - e*log(e,2)
-        
         
         # Plotting
         if print_each_iter:
@@ -167,21 +201,41 @@ class SGA():
             
             selected = []
             
-            for t in range(2):
-                temp = float('-inf')
-                
-                for i in range(len(fit_selected)):
-                    if fit_selected[i] > temp:
-                        temp = i
-                
-                # Add the selected individual to the list
-                selected.append(local_selected[i])
-                
-                # Remove the already selected individual
-                del local_selected[i]
-                del fit_selected[i]
+            # Maximizing fitness
+            if self.fitness_type == 0:
             
+                for t in range(2):
+                    temp = float('-inf')
+                    
+                    for i in range(len(fit_selected)):
+                        if fit_selected[i] > temp:
+                            temp = i
+                    
+                    # Add the selected individual to the list
+                    selected.append(local_selected[i])
+                    
+                    # Remove the already selected individual
+                    del local_selected[i]
+                    del fit_selected[i]
+            
+            # Minimizing fitness
+            else:
+                for t in range(2):
+                    temp = float('inf')
+                    
+                    for i in range(len(fit_selected)):
+                        if fit_selected[i] < temp:
+                            temp = i
+                    
+                    # Add the selected individual to the list
+                    selected.append(local_selected[i])
+                    
+                    # Remove the already selected individual
+                    del local_selected[i]
+                    del fit_selected[i]
+                
             return selected
+        
         
         # Keep the track of selected parents
         selected = []
@@ -209,8 +263,8 @@ class SGA():
         
             
     # Task c
-    # Creates offspring - applies recombination to get offpsring from a set of two parents, then applies mutation with probability mut_p
-    def create_offspring(self, selected_parents, recombination = True, rec_type = 0, rec_p = 0.5, mutation = True, mut_p = 0.3, mut_bitwise_p = 0.1 ):
+    # Creates offspring - applies recombination to get offpsring from a set of two parents
+    def create_offspring(self, selected_parents, recombination = True, rec_type = 0, rec_p = 0.5 ):
 
         # Generational genetic algorithm
         # The entire population will replaced by the offspring                                
@@ -246,12 +300,8 @@ class SGA():
             else:
                 Exception("Unrecognized recombination type in offspring creation.")
 
-        # Mutate the offspring with a probability mut_p
-        if mutation and random.random() < mut_p:
-            for o in offspring:         
-                o = self.mutate( o, mut_bitwise_p )
-                            
         return offspring
+    
     
     
     # Task d
@@ -266,9 +316,13 @@ class SGA():
             
             # Remove the oldies
             self.clear_current_population()
-            
+
             # QUESTION Does sorting mess up with probabilities?
-            survivors.sort(key= self.fitness_function, reverse = True)
+            if self.fitness_type == 0:
+                survivors.sort(key= self.fitness_function, reverse = True)
+            else:
+                survivors.sort(key= self.fitness_function)
+            
             
             # Trim down the survivors, keeping only the fittest ones
             self.current_population = survivors[:self.population_size]
@@ -306,15 +360,15 @@ class SGA():
             
     
     # Fitness function that tests the fitness of the bitstring individual
-    # fun_type = 0 is for sin(), 1 is for linReg
-    def fitness_function(self, individual, fun_type = 0):
-        
-        if fun_type == 0:
+    # fun_type = 0 is for sin(), 1 is for linReg is assigned at the initialization
+    def fitness_function(self, individual):
+           
+        if self.fitness_type == 0:
             return sin( self.decode(individual) )
         
-        elif fun_type == 1:
-          #  return LinReg.get_fitness    
-          pass
+        elif self.fitness_type  == 1:
+          return self.linreg.get_fitness(self.dataset, self.linreg.get_columns( self.dataset, individual) )
+          
       
     # Simple bit string mutation - returns a mutated individual
     
@@ -325,6 +379,7 @@ class SGA():
                 individual = individual[:i] + str( int( not int(individual[i]))) + individual[i+1:]
         return individual
                 
+    
     # Analytics and Plotting        
     # =========================================================
     
@@ -386,7 +441,11 @@ class SGA():
 
 # ================================================================================================================== End of  class SGA()
     
-    
+
+# Running the code
+
+
+
 # Running the SGA without crowding, with iterations
 sga = SGA(
     # Algorithm specifics
@@ -410,18 +469,52 @@ sga.plot()
 sga.plot_data()
 sga.plot_entropy()
 
-# Running the SGA with crowding, letting it stop once the mean average gets close enough to 1
+
+# Running the SGA with crowding, letting it stop once the mean average gets close enough to 1 (0.99 in my case)
 sga_crowding = SGA(
     use_iterations = False,
     use_crowding = True,
     
     # Population and Individual params
-    population_size = 500, 
-    individual_size = 16
-
+    population_size = 100, 
+    individual_size = 8
     )
 
 sga_crowding.plot()
 sga_crowding.plot_data()
-sga.plot_entropy()
+sga_crowding.plot_entropy()
 
+
+# Running using  without crowding. Will print out the found RMSE (usually one value)
+sga_linreg = SGA(
+    
+    use_iterations = True, 
+    iterations = 20, 
+    
+    individual_size = 7,
+    
+    fitness_function_type = 1
+    )
+
+
+# Print the RMSE values found
+for i in Counter( sga_linreg.current_population):
+    print( sga_linreg.fitness_function(i) )
+
+
+# Running using  without crowding. Will print out the found RMSE (usually a few)
+sga_linreg = SGA(
+    
+    use_iterations = True,     
+    use_crowding = True,
+    
+    iterations = 20, 
+    
+    individual_size = 7,
+    
+    fitness_function_type = 1
+    )
+
+# Print the RMSE values found
+for i in Counter( sga_linreg.current_population):
+    print( sga_linreg.fitness_function(i) )
