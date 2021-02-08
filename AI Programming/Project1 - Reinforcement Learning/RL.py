@@ -13,24 +13,31 @@ import matplotlib.pyplot as plt
 
 class RL():
     
-    # Private members
-    
+    # Once RL is initalized, so will these.
     actor = None
     critic = None
     state = None
     
-    
-    # Analytics 
-    solved_puzzles = [0]
-    
-    
-    def __init__(self, grid_type, grid_size, episodes = 1000):
+    def __init__(self, grid_type, grid_size, start_point_num = 1, start_point_coor = None, train_episodes = 1000, print_grid = False):
+        
+        # Grid related
         self.grid_type = grid_type
         self.grid_size = grid_size
-        self.episodes = episodes
+        self.start_point_num = start_point_num
+        self.start_point_coor = start_point_coor
+        
+        # Training related
+        self.episodes = train_episodes
+        
+        # Analytics
+        # TODO this is unused as of now
+        self.print_grid = print_grid
+        
+        # Train the RL
         self.train()
         
-        
+     
+    # Train the RL
     def train(self):
         
         # Initializing the actor and the critic 
@@ -47,7 +54,7 @@ class RL():
                     
             # Getting the initial state 
             # The initial action is decided via the policy by the actor
-            self.state = grid.Grid(self.grid_type, self.grid_size) 
+            self.state = grid.Grid(self.grid_type, self.grid_size, self.start_point_num, self.start_point_coor) 
             
             # Clearing eligibility traces
             self.actor.clear_elig()
@@ -55,8 +62,10 @@ class RL():
             
             # Testing Grounds ==============
             # Greed rate changes depending on the number of episodes run
-            # self.actor.greed_rate = 1/(1 + episode)**0.5              # Results in higher number of solved puzzles, but also means less exploration
-            
+            # Results in higher number of solved puzzles, but also means less exploration
+            # TODO find the one that uses ln() in the book
+            # self.actor.greed_rate = 1/(1 + episode)**0.5              
+            # Testing Grounds ==============
             
             # Playing and learning until a terminal state is reached
             while (not self.state.is_terminal()):
@@ -81,20 +90,29 @@ class RL():
         
         
         # Analytics
+        
+        # Plots the total solved vs episodes run
+        plt.figure()
         plt.plot( episodes_run, total_solved )
+        
+        plt.xlabel("Episodes")
+        plt.ylabel("Solved")
 
-
-        #plt.plot( range(0, self.episodes), pegs_remaining )
+        # Plots the number of pegs remaining per episode
+        plt.figure()
+        plt.plot( range(len(pegs_remaining)) , pegs_remaining )
+        
+        plt.xlabel("Episode")
+        plt.ylabel("Pegs left on the board")
         
         
-    # Play the game greedily, e.g. full on greed policy
-    # TODO this is shit, doesnt work, some code needs to be rewamped
+    # Play the game greedily, e.g. use the deterministic policy
     def play(self, episodes=50):
 
         solved = 0
         
         for e in range(episodes):
-            g = grid.Grid(self.grid_type, self.grid_size)
+            g = grid.Grid(self.grid_type, self.grid_size, self.start_point_num, self.start_point_coor)
             
             while(not g.is_terminal()):
                 g.make_move(self.actor.det_policy( g ))
@@ -104,8 +122,20 @@ class RL():
           
         print(solved, "/", episodes)
     
-test = RL(0,4)
+    
+    
+# Time to run the function
+
+rl = RL(
+        # Grid related parameters
+        grid_type = 0, 
+        grid_size = 4, 
+        start_point_num = 1, 
+        start_point_coor= [ [1,1], [0,0] ],
+        
+        train_episodes = 300
+    )
 
 
 
-test.play()
+rl.play()

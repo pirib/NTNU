@@ -37,7 +37,6 @@ class Critic():
             
             
     # Add a v(s) if it hasnt been visited before, and give it a random small number
-    # TODO ehhh, like this? ^
     def add_vs(self, s):   
         if (not s in self.state_value):
             self.state_value[s] = [ 0 , 0, False] 
@@ -54,7 +53,6 @@ class Critic():
     def evaluate(self, s, sp, r):
         
         # Add a new state s
-        # TODO do i need to add sp as well?
         self.add_vs(s)
         self.add_vs(sp)
         
@@ -66,18 +64,21 @@ class Critic():
         self.state_value[ s ][ 2 ] = True
 
         return self.td
-        
+    
+    # Updates the visited sv if it was visited this training episode with new elig. traces, and values
     def update_visited(self, td):
         for key in self.state_value:
             if (self.state_value[key][2] == True):
                 self.state_value[key][0] = self.state_value[key][0] + self.learning_step*td*self.state_value[key][1]
                 self.state_value[key][1] = self.state_value[key][1]*self.discount*self.elig_rate
+     
             
 class Actor():
     
     # Private
     # This is where State action pair along the eligibility traces are kept
-    # The structure is state, action = value, eligibility, visited this episode (Bool)
+    # The structure is:
+    # state, action = value, eligibility, visited this episode (Bool)
     saps = {}
     
     
@@ -87,7 +88,7 @@ class Actor():
     
     
     # Constructor
-    def __init__(self, learning_step = 0.1, greed_rate = 0.5 , elig_rate = 0.9, discount = 0.09):
+    def __init__(self, learning_step = 0.1, greed_rate = 0.1 , elig_rate = 0.9, discount = 0.09):
         
         # Setting the private parameters
         self.learning_step = learning_step
@@ -125,15 +126,17 @@ class Actor():
 
             s = state.get_state()
             
+            # Find the one with the highest (s,a) pair
             for a in state.get_available_actions():  
                 if ( self.saps[s,a][0] > highest_a ):
                     highest_a = self.saps[s,a][0]
                     result = a
-
-                
+         
             return tuple(result)
 
+
     # Deterministic policy
+    # Returns the best action if the sa values have been explored before, else just picks one at random
     def det_policy(self, grid):
         
         s = grid.get_state()
@@ -143,13 +146,19 @@ class Actor():
         
         for a in grid.get_available_actions():
             # Checking for possiblity of an explored sate
-            # TODO decide what to do with an unexpored state
+            
+            # Pick the a which leads to highes (s,a) pair
             if (s,a) in self.saps:
                 if ( self.saps[s,a][0] > highest_a ):
                     highest_a = self.saps[s,a][0]
                     result = a
-
+            
+        # There is a chance that we end up with an unexplorerd state, so we have to take an exploration choice
+        if result == None:
+            result = random.choice(grid.get_available_actions())
+                
         return tuple(result)
+
 
     # Adds a sap if it didnt exist before
     def add_saps(self, state):   
@@ -179,7 +188,6 @@ class Actor():
         self.saps[s,a][2] = True
         
 
-        
         # Perform that action, thus moving to a new state 
         state.make_move(a)
         
