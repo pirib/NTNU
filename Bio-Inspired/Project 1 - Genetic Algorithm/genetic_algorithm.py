@@ -39,11 +39,20 @@ class SGA():
     entropy = []
     
 
-    # The default values used are the ones that were found to be performance-wise most promising
+    # The default values used are the ones that were found to be performance-wise most promising. 
     
     # Parameters list
-    # population_size   - how many individuals are kept at a given time
-    # individual_size   - how many bits are used to represent an individual
+    # use_iterations - if True, the GA will stop after it has run itself iteratively "iterations" number of times 
+    # threshold - at which threshold the GA should stop if it nos running iteratively
+    
+    # fitness_function_type - 0 for sin(i), 1 for linreg 
+    # maximize - set True if we should be maximizing over the fitness function
+    
+    # prob-mutation - probability of mutation happening
+    
+    # print_each_iter - will plot out the population on every iteration
+    
+    # The rest are pretty self-descriptive
     
     def __init__(self, 
                  
@@ -51,13 +60,15 @@ class SGA():
                  use_iterations = True, 
                  iterations = 10, 
                  use_crowding = False, 
+                 threshold = 0.99,
                  
                  # Population parameters
                  population_size = 100, 
                  individual_size = 10, 
 
-                 # Fitness function 0 for sin, 1 for linreg
+                 # Fitness function
                  fitness_function_type = 0,
+                 maximize = True,
 
                  # Mutation
                  mutation = True,
@@ -75,6 +86,7 @@ class SGA():
         self.iterations = iterations
         self.use_iterations = use_iterations
         self.use_crowding = use_crowding
+        self.threshold = threshold
         
         
         # Set the population parameters
@@ -83,6 +95,7 @@ class SGA():
         
         # Fitness param
         self.fitness_type = fitness_function_type
+        self.maximize = maximize
         
         # Mutation
         self.mutation = mutation
@@ -108,6 +121,8 @@ class SGA():
     # Run the algorithm "iterations" times 
     def run(self, use_iterations, iterations, use_crowding, print_each_iter ):
         
+        # The actual GA ===========================================================================
+        
         # Temp holders
         parents = self.select_parents()       
         offspring = []
@@ -132,12 +147,12 @@ class SGA():
         # Trims down current_population up to population_size 
         self.select_survivors(parents, offspring, use_crowding)
         
-        # Analytics
+        # Analytics ===========================================================================
         # Accumulate mean fitness data
         self.mean_fitness.append( sum( self.fitness_function(i) for i in self.current_population ) / len(self.current_population))
         
         
-        # Entropy
+        # Entropy 
         
         # Empty list with 
         entropy = [0]* self.individual_size
@@ -160,19 +175,24 @@ class SGA():
             if e != 0:
                 self.entropy[-1] = self.entropy[-1] - e*log(e,2)
         
-        # Plotting
+        
+        # Plotting 
         if print_each_iter:
             self.plot()
 
 
-        # Recursively call to ireate more        
+        # Recursively call to ireate more ===========================================================================       
         if (use_iterations):
             if iterations > 0:
                 self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
         else:
-            if (self.mean_fitness[-1] < 0.99):
-                self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
-        
+        # Ot if it has not reached the threshold
+            if self.maximize:
+                if (self.mean_fitness[-1] < self.threshold):
+                    self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
+            else:
+                if (self.mean_fitness[-1] > self.threshold):
+                    self.run(use_iterations, iterations-1, use_crowding, print_each_iter  )
         
     # Task a
     
@@ -202,7 +222,7 @@ class SGA():
             selected = []
             
             # Maximizing fitness
-            if self.fitness_type == 0:
+            if self.maximize:
             
                 for t in range(2):
                     temp = float('-inf')
@@ -239,6 +259,7 @@ class SGA():
         
         # Keep the track of selected parents
         selected = []
+
 
         # Tournament selection based on p.85 Eiben and Smith
         while len(selected) < self.population_size:
@@ -303,12 +324,11 @@ class SGA():
         return offspring
     
     
-    
     # Task d
     # use_crowding indicates whether to use (μ, λ) Selection or crowding
     def select_survivors(self, parents, offspring, use_crowding):
         
-        # (μ, λ) Selections
+        # ============================== (μ, λ) Selections
         # p. 89 in Eiben and Smith
         if not use_crowding:
             # The entire pool of survivors are the parents and offspring
@@ -318,7 +338,7 @@ class SGA():
             self.clear_current_population()
 
             # QUESTION Does sorting mess up with probabilities?
-            if self.fitness_type == 0:
+            if self.maximize:
                 survivors.sort(key= self.fitness_function, reverse = True)
             else:
                 survivors.sort(key= self.fitness_function)
@@ -327,7 +347,8 @@ class SGA():
             # Trim down the survivors, keeping only the fittest ones
             self.current_population = survivors[:self.population_size]
             
-        # Restricted Tournament Selection
+            
+        # ============================== Restricted Tournament Selection
         # P 198 in Simon
         else:
             
@@ -351,9 +372,14 @@ class SGA():
                 p = min( comparison_pool, key=similarity_coef)
                 
                 # And replace if child's fitness is better
-                if self.fitness_function( p ) < self.fitness_function(o):
-                    survivors.append(o)
-                    parents.remove(p)
+                if self.maximize:
+                    if self.fitness_function( p ) < self.fitness_function(o):
+                        survivors.append(o)
+                        parents.remove(p)
+                else:
+                    if self.fitness_function( p ) > self.fitness_function(o):
+                        survivors.append(o)
+                        parents.remove(p)
             
             self.current_population = survivors + parents
             
@@ -383,9 +409,8 @@ class SGA():
     # Analytics and Plotting        
     # =========================================================
     
-    # PLot the sine function
+    # Plot the sine function
     def plot(self, print_counter = False):
-        
         
         # For plotting the sine function
         sin_x = np.arange(0, 40*np.pi, 0.1)
@@ -443,7 +468,8 @@ class SGA():
     
 
 # Running the code
-
+# Simply use plot(), plot_data(), plot_entropy() after initialization to ge the plots to appear.
+# IDE used is Spyder, but should work just fine in others as well
 
 
 # Running the SGA without crowding, with iterations
@@ -451,11 +477,11 @@ sga = SGA(
     # Algorithm specifics
     use_iterations = True, 
     iterations = 30, 
-    use_crowding = False, 
+    use_crowding = False,
     
     # Population and Individual params
-    population_size = 500, 
-    individual_size = 16, 
+    population_size = 100, 
+    individual_size = 10, 
 
     # Mutation in offspring
     mutation = True,
@@ -472,12 +498,16 @@ sga.plot_entropy()
 
 # Running the SGA with crowding, letting it stop once the mean average gets close enough to 1 (0.99 in my case)
 sga_crowding = SGA(
+    
+    # Run parameters  
     use_iterations = False,
     use_crowding = True,
+    threshold= 0.99,
     
-    # Population and Individual params
+    # Population params
     population_size = 100, 
     individual_size = 8
+    
     )
 
 sga_crowding.plot()
@@ -485,15 +515,20 @@ sga_crowding.plot_data()
 sga_crowding.plot_entropy()
 
 
-# Running using  without crowding. Will print out the found RMSE (usually one value)
+# Running using  without crowding. Will print out the found RMSE (depending on a parameters from one to a few)
 sga_linreg = SGA(
     
+    # Run parameters    
     use_iterations = True, 
-    iterations = 20, 
-    
-    individual_size = 7,
-    
-    fitness_function_type = 1
+    iterations = 30, 
+
+    # Population parameters    
+    population_size = 100,
+    individual_size = 10,
+
+    # Fitness function
+    fitness_function_type = 1,
+    maximize = False
     )
 
 
@@ -502,18 +537,22 @@ for i in Counter( sga_linreg.current_population):
     print( sga_linreg.fitness_function(i) )
 
 
-# Running using  without crowding. Will print out the found RMSE (usually a few)
+# Running using  without crowding. Will print out the found RMSE (usually many)
 sga_linreg = SGA(
     
+    # Run parameters    
     use_iterations = True,     
     use_crowding = True,
     
-    iterations = 20, 
+    # Population parameters    
+    iterations = 200,     
+    individual_size = 100,
     
-    individual_size = 7,
-    
-    fitness_function_type = 1
+    # Fitness function
+    fitness_function_type = 1,
+    maximize = False
     )
+
 
 # Print the RMSE values found
 for i in Counter( sga_linreg.current_population):
