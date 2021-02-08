@@ -18,7 +18,32 @@ class RL():
     critic = None
     state = None
     
-    def __init__(self, grid_type, grid_size, start_point_num = 1, start_point_coor = None, train_episodes = 1000, print_grid = False):
+    def __init__(self, 
+                 
+                 # Grid params
+                 grid_type, 
+                 grid_size, 
+                 start_point_num = 1, 
+                 start_point_coor = None, 
+                 
+                 # Training Param
+                 train_episodes = 1000, 
+                 
+                 # Actor params
+                 actor_learning_step = 0.1, 
+                 actor_greed_rate = 0.1, 
+                 actor_elig_rate = 0.9, 
+                 actor_discount = 0.09,
+                 
+                 # Critic params
+                 critic_mode = 0,                           # 0 for tabular, 1 for neural nets 
+                 critic_learning_step = 0.1, 
+                 critic_elig_rate = 0.9, 
+                 critic_discount = 0.09,
+                 
+                 # Analytics TODO unused so far
+                 print_grid = False
+                 ):
         
         # Grid related
         self.grid_type = grid_type
@@ -29,8 +54,19 @@ class RL():
         # Training related
         self.episodes = train_episodes
         
+        # Actor params
+        self.actor_learning_step = actor_learning_step  
+        self.actor_greed_rate = actor_greed_rate
+        self.actor_elig_rate = actor_elig_rate
+        self.actor_discount = actor_discount
+        
+        # Critic params
+        self.critic_mode = critic_mode 
+        self.critic_learning_step = critic_learning_step
+        self.critic_elig_rate = critic_elig_rate 
+        self.critic_discount = critic_discount 
+        
         # Analytics
-        # TODO this is unused as of now
         self.print_grid = print_grid
         
         # Train the RL
@@ -41,8 +77,19 @@ class RL():
     def train(self):
         
         # Initializing the actor and the critic 
-        self.actor = ac.Actor()
-        self.critic = ac.Critic()
+        self.actor = ac.Actor(
+                learning_step = self.actor_learning_step, 
+                greed_rate = self.actor_greed_rate, 
+                elig_rate = self.actor_elig_rate, 
+                discount = self.actor_discount
+            )
+                
+        self.critic = ac.Critic(
+            mode = self.critic_mode, 
+            learning_step = self.critic_learning_step, 
+            elig_rate = self.critic_elig_rate, 
+            discount = self.critic_discount
+            )
         
         # Analytics
         total_solved = [ 0 ]
