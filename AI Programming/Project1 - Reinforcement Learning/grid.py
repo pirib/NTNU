@@ -147,17 +147,29 @@ class Grid():
 
 
     # Returns a compact state representation 
-    def get_state(self):
+    def get_state(self, binary = False):
         
-        # Any state can be represented as nodes with given coordinates, and whether it is empty or not
-        # Do not care about the neighbours
-        state = []
+        # The binary state, used by NN
+        if binary:
+            state = ''
+            
+            for row in self.grid:
+                for node in row:
+                    state = state + '0' if node.empty else state + '1'
         
-        for row in self.grid:
-            for node in row:
-                state.append( (node.row, node.col, node.empty) )
-                
-        return tuple(state)
+            return state
+        
+        else:
+            # Any state can be represented as nodes with given coordinates, and whether it is empty or not
+            # Do not care about the neighbours
+            state = []
+            
+            for row in self.grid:
+                for node in row:
+                    state.append( (node.row, node.col, node.empty) )
+                      
+            return tuple(state)
+
 
 
     # Returns a dictionary of available actions given a grid (e.g. state)
