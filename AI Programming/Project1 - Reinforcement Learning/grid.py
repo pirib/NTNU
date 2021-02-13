@@ -147,29 +147,24 @@ class Grid():
 
 
     # Returns a compact state representation 
-    def get_state(self, binary = False):
+    def get_state(self, binary = True):
+        """
+        # The binary state representation
+        state = ''
         
-        # The binary state, used by NN
-        if binary:
-            state = ''
-            
-            for row in self.grid:
-                for node in row:
-                    state = state + '0' if node.empty else state + '1'
+        for row in self.grid:
+            for node in row:
+                state = state + '0' if node.empty else state + '1'
+        """
         
-            return state
+        state = []
         
-        else:
-            # Any state can be represented as nodes with given coordinates, and whether it is empty or not
-            # Do not care about the neighbours
-            state = []
-            
-            for row in self.grid:
-                for node in row:
-                    state.append( (node.row, node.col, node.empty) )
-                      
-            return tuple(state)
-
+        for row in self.grid:
+            for node in row:
+                state.append( 0 if node.empty else 1)
+        
+        return tuple(state)
+        
 
 
     # Returns a dictionary of available actions given a grid (e.g. state)
@@ -226,7 +221,8 @@ class Grid():
                     num_peg += 1
         return num_peg
 
-    # The environment returns 1000 if the terminal state reached is a solved puzzle, and 0 otherwise
+    # The environment returns 100 if the terminal state reached is a solved puzzle, and 0 otherwise
+    # TODO return minus for bad states
     def get_reward(self):         
         return 100 if (self.remaining_pegs() == 1) else 0
 

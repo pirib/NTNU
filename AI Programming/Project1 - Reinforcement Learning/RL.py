@@ -37,9 +37,11 @@ class RL():
                  
                  # Critic params
                  critic_mode = 0,                           # 0 for tabular, 1 for neural nets 
+                 critic_nn_layers = [10, 20, 10],           # Number of neurons per hidden layer
                  critic_learning_step = 0.1, 
                  critic_elig_rate = 0.9, 
                  critic_discount = 0.09,
+
                  
                  # Analytics TODO unused so far
                  print_grid = False
@@ -66,6 +68,9 @@ class RL():
         self.critic_elig_rate = critic_elig_rate 
         self.critic_discount = critic_discount 
         
+        critic_nn_layers.insert(0 , grid_size * grid_size if grid_type == 0 else grid_size(grid_size + 1) / 2) 
+        self.critic_nn_layers = critic_nn_layers  # Calculate number of neurons in input layer
+        
         # Analytics
         self.print_grid = print_grid
         
@@ -88,7 +93,8 @@ class RL():
             mode = self.critic_mode, 
             learning_step = self.critic_learning_step, 
             elig_rate = self.critic_elig_rate, 
-            discount = self.critic_discount
+            discount = self.critic_discount,
+            critic_nn_layers = self.critic_nn_layers
             )
         
         # Analytics
@@ -177,10 +183,13 @@ rl = RL(
         # Grid related parameters
         grid_type = 0, 
         grid_size = 4, 
-        start_point_num = 1, 
-        start_point_coor= [ [1,1], [0,0] ],
+        start_point_coor= [ [1,1] ],
         
-        train_episodes = 300
+        critic_mode = 0,
+        
+        actor_greed_rate = 0.1, 
+
+        train_episodes = 100
     )
 
 

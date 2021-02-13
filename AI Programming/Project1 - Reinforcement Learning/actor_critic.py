@@ -6,6 +6,11 @@ Created on Thu Jan 28 18:52:41 2021
 """
 import random
 
+import NN 
+
+import numpy as np
+
+
 
 class Critic():
     
@@ -13,12 +18,15 @@ class Critic():
     # The structure is state = value, eligibility, visited this episode (Bool)
     state_value = {} 
     
+    # If mode == 1 e.g. NN is used
+    model = None
+    
     td = None
     
     # Constructor
     # Mode: 0 for tabular, 1 for neural network
     # TODO Mode doesnt do shit yet
-    def __init__(self, mode = 0, learning_step = 0.1, elig_rate = 0.9, discount = 0.09):
+    def __init__(self, mode = 0, learning_step = 0.1, elig_rate = 0.9, discount = 0.09, critic_nn_layers = None):
         
         # Setting the private parameters
         self.mode = mode
@@ -29,6 +37,11 @@ class Critic():
         # Cleaning up the old state values
         self.state_value.clear()
         
+        # Generate an NN if mode == 1
+        if mode == 1: 
+            self.model = NN.NN( critic_nn_layers )
+            
+
     # Sets all eligibility rates in the dictionary to 0 and set visited to False
     def clear_elig(self):
         for key in self.state_value:
@@ -43,8 +56,17 @@ class Critic():
     
     # Returns value of a state, e.g. V(S)
     def v(self, state):
-        return self.state_value[state][0]
-   
+        
+        # Return the value of the state from the dictionary
+        if self.mode == 0: return self.state_value[state][0]
+        
+        # Return the value of the state from the NN
+        
+        state = np.array(state)        
+        state = state.astype(np.float)
+        
+        return self.model.model.predict( state )
+
     # Calculates the delta
     def calculate_td(self, s, sp, r):
         self.td = r + self.discount*self.v(sp) - self.v(s)
@@ -67,12 +89,26 @@ class Critic():
     
     # Updates the visited sv if it was visited this training episode with new elig. traces, and values
     def update_visited(self, td):
-        for key in self.state_value:
-            if (self.state_value[key][2] == True):
-                self.state_value[key][0] = self.state_value[key][0] + self.learning_step*td*self.state_value[key][1]
-                self.state_value[key][1] = self.state_value[key][1]*self.discount*self.elig_rate
-     
+        
+        # Updating the visited states in tabular mode
+        if self.mode == 0:
+            for key in self.state_value:
+                if (self.state_value[key][2] == True):
+                    self.state_value[key][0] = self.state_value[key][0] + self.learning_step*td*self.state_value[key][1]
+                    self.state_value[key][1] = self.state_value[key][1]*self.discount*self.elig_rate
+        
+        # Refit the NN
+        else: 
+            # Refitting the NN for each visited state
+            for key in self.state_value:
+                
+                state = np.array(key)        
+                state = state.astype(np.float)
+                
+                self.model.fit( state, td )
             
+            
+        
 class Actor():
     
     # Private
