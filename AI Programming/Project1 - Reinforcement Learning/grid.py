@@ -41,10 +41,10 @@ class Grid():
     # Grid(0,5, start_point_coor = [ [1,1] ] )
     # Will create a 5-size diamond grid with a peg missing at [1,1] <- Note how this was passed!    
     
-    def __init__( self, grid_type, size, start_point_num = 1, start_point_coor = None ):
+    def __init__( self, grid_type, size, start_point_num, start_point_coor = None, create_within_coor = False ):
         self.grid.clear()
         self.create(grid_type, size)
-        self.create_start_points(start_point_num, start_point_coor)
+        self.create_start_points(start_point_num, start_point_coor, create_within_coor)
 
         
     # Destructor - also removes all the nodes.
@@ -96,9 +96,9 @@ class Grid():
 
     # Initializes empty points in the grid. These are the "starting points" for the game.
 
-    # Deliverable note
-    # Starting in 1 2 or 2 1 in a 4 size diamond yields no solutions.
-    def create_start_points(self, point_num, points_coor):
+    # NOTE
+    # Starting in 1 1 or 2 2 in a 4 size diamond yields no solutions.
+    def create_start_points(self, point_num, points_coor, create_within_coor):
     
         # If no point_coordinates have been passed, the points are generated randomly   
         # Number of points generates deoends on point_num
@@ -109,21 +109,31 @@ class Grid():
                 random_node = random.choice( random.choice(self.grid) )
                 
                 if (random_node.empty == False):
-                    random_node.empty = True
+                    random_node.remove_pin()
                     point_num -=  1
             
-        # If coordinates have been provided, then they become the starting points instead
+        # If coordinates have been provided, either they should be generated randomly within the given coordinates, or be static
         # The parameters point_num is ignored
         else:
             
-            # Python's way of handling lists made me do this
-            coordinates = [ [None, None] ]
-            coordinates.append( points_coor )
+            # Create 
+            if create_within_coor:
+                while (point_num > 0):
+                   
+                    random_coor = random.choice(points_coor )
+                    random_node = self.grid[random_coor[0]][random_coor[1]]
+
+                    if (random_node.empty == False):                        
+                        random_node.remove_pin()
+                        point_num -=  1             
             
-            for coor in points_coor:
-                if ( coor[0] != None):
-                    self.grid[coor[0]][coor[1]].empty = True     
+            # Generate points in the given coordinates 
+            else:
                 
+                for coor in points_coor:
+                    if ( coor[0] != None):
+                        self.grid[coor[0]][coor[1]].remove_pin()
+                    
                 
     # Pass an action in the form of a [ (from_node) , (over_node) , (to_node)  ]
     # The function moves the grid into a new state
@@ -138,25 +148,16 @@ class Grid():
             over_node = self.grid[over_node_coor[0]][over_node_coor[1]]
             to_node   = self.grid[to_node_coor[0]][to_node_coor[1]]
             
-            from_node.empty = True
-            over_node.empty = True
-            to_node.empty   = False
+            from_node.remove_pin()
+            over_node.remove_pin()
+            to_node.insert_pin()
             
         else: 
             raise Exception("Attempted to make an illegal move! Move is: " + action)
 
 
     # Returns a compact state representation 
-    def get_state(self, binary = True):
-        """
-        # The binary state representation
-        state = ''
-        
-        for row in self.grid:
-            for node in row:
-                state = state + '0' if node.empty else state + '1'
-        """
-        
+    def get_state(self):
         state = []
         
         for row in self.grid:
@@ -222,13 +223,17 @@ class Grid():
         return num_peg
 
     # The environment returns 100 if the terminal state reached is a solved puzzle, and 0 otherwise
-    # TODO return minus for bad states
-    def get_reward(self):         
-        return 100 if (self.remaining_pegs() == 1) else 0
-
+    def get_reward(self):
+        
+        if (self.remaining_pegs() == 1):
+            return 100 
+        elif self.is_terminal():
+            return -100
+        else:
+            return 0
     
     # Prints out a pretty looking grid
-    def print_grid(self):
+    def print_grid(self, episode):
         
         # The new graph for printing
         G = nx.Graph()
@@ -252,8 +257,9 @@ class Grid():
         
         # Draws the nodes 
     
+        plt.title(f"Episode {episode+1}")
         nx.draw(G, labels, labels=labels, node_color=color_map)
-        plt.show()
+        plt.pause(0.001)
 
 
     # For Debugging =============================================================

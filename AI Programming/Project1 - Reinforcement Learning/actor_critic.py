@@ -4,13 +4,10 @@ Created on Thu Jan 28 18:52:41 2021
 
 @author: babay
 """
+
 import random
-
 import NN 
-
 import numpy as np
-
-
 
 class Critic():
     
@@ -25,7 +22,6 @@ class Critic():
     
     # Constructor
     # Mode: 0 for tabular, 1 for neural network
-    # TODO Mode doesnt do shit yet
     def __init__(self, mode = 0, learning_step = 0.1, elig_rate = 0.9, discount = 0.09, critic_nn_layers = None):
         
         # Setting the private parameters
@@ -45,8 +41,7 @@ class Critic():
     # Sets all eligibility rates in the dictionary to 0 and set visited to False
     def clear_elig(self):
         for key in self.state_value:
-            self.state_value[key][1] = 0
-            self.state_value[key][2] = False
+            self.set_state_info(key, eligibility= 0, visited = False)
             
             
     # Add a v(s) if it hasnt been visited before, and give it a random small number
@@ -54,23 +49,30 @@ class Critic():
         if (not s in self.state_value):
             self.state_value[s] = [ 0 , 0, False] 
     
+    
     # Returns value of a state, e.g. V(S)
     def v(self, state):
         
         # Return the value of the state from the dictionary
-        if self.mode == 0: return self.state_value[state][0]
+        if self.mode == 0: return self.get_state_value(state)
         
         # Return the value of the state from the NN
-        
-        state = np.array(state)        
-        state = state.astype(np.float)
-        
-        return self.model.model.predict( state )
+        else:
+           
+            st = np.array(state)        
+            st = st.astype(np.float)
+            st = np.expand_dims(st, 0) 
+  
+            value = self.model.model.predict(st , verbose = 0)              
+            
+            return int(value)
+
 
     # Calculates the delta
     def calculate_td(self, s, sp, r):
         self.td = r + self.discount*self.v(sp) - self.v(s)
    
+    
     # The Evaluation step, right after Actor has made a move and transition s -> sp has occured
     def evaluate(self, s, sp, r):
         
@@ -79,13 +81,14 @@ class Critic():
         self.add_vs(sp)
         
         # Calculate TD
-        self.calculate_td(s, sp ,r)
+        self.calculate_td(s, sp, r)
         
         # Update the eligibility for s
-        self.state_value[ s ][ 1 ] = 1
-        self.state_value[ s ][ 2 ] = True
-
+        self.set_state_info(s, eligibility = 1 )
+        self.set_state_info(s, visited = True )
+        
         return self.td
+    
     
     # Updates the visited sv if it was visited this training episode with new elig. traces, and values
     def update_visited(self, td):
@@ -93,22 +96,41 @@ class Critic():
         # Updating the visited states in tabular mode
         if self.mode == 0:
             for key in self.state_value:
-                if (self.state_value[key][2] == True):
-                    self.state_value[key][0] = self.state_value[key][0] + self.learning_step*td*self.state_value[key][1]
-                    self.state_value[key][1] = self.state_value[key][1]*self.discount*self.elig_rate
-        
+                if self.state_visited(key):
+                    self.set_state_info(    key = key,
+                                            value = self.get_state_value(key) + self.learning_step*td*self.get_state_elig(key)  ,
+                                            eligibility = self.get_state_elig(key)*self.discount*self.elig_rate
+                                            )
+                    
         # Refit the NN
         else: 
             # Refitting the NN for each visited state
             for key in self.state_value:
-                
-                state = np.array(key)        
-                state = state.astype(np.float)
-                
-                self.model.fit( state, td )
-            
-            
+                if self.state_visited(key):
+                    self.model.fit(key, td, self.learning_step)
+
+
+    
+    # Helper functions
+    
+    # Sets the state information - the value, elig trace, and whether it has been visited or not
+    def set_state_info(self, key, value = None, eligibility = None, visited = None):
         
+        if value is not None: self.state_value[key][0] = value
+        if eligibility is not None: self.state_value[key][1] = eligibility
+        if visited is not None: self.state_value[key][2] = visited
+
+    def get_state_value(self, key):
+        return self.state_value[key][0]
+    
+    def get_state_elig(self, key):
+        return self.state_value[key][1]
+    
+    def state_visited(self, key):
+        return self.state_value[key][2]
+        
+        
+
 class Actor():
     
     # Private
@@ -152,7 +174,7 @@ class Actor():
         if (random.random() < self.greed_rate):
 
             # Exploration choice
-            return tuple( random.choice(state.get_available_actions()) )
+            return tuple( random.choice( state.get_available_actions()) )
             
         # Exploit move
         else:
@@ -243,6 +265,3 @@ class Actor():
             if (self.saps[key][2] == True):
                 self.saps[key][0] = self.saps[key][0] + self.learning_step*td*self.saps[key][1]
                 self.saps[key][1] = self.discount*self.elig_rate*self.saps[key][1]
-            
-    
-    

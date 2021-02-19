@@ -21,6 +21,11 @@ class Node:
     def set_neighbours(self, neighbours):
         self.neighbours = neighbours
         
+    def remove_pin(self):
+        self.empty = True
+        
+    def insert_pin(self):
+        self.empty = False
     
     # Debug methods
     def print_neighbours(self):
