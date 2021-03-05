@@ -8,12 +8,11 @@ using namespace std;
 
 int main()
 {
+
 	GA t = GA(0.6, 111, 0.1);
+	t.run("p01");
 
 
-	t.read_problem_file();
-
-
-
+	// Just so it is easier to read the terminal output
 	cout << "\n\n";
 }

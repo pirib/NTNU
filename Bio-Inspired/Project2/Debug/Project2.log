@@ -1,2 +1,6 @@
-﻿  Methods.cpp
+﻿  GA.hpp
+  Main.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(12,25): warning C4305: 'argument': truncation from 'double' to 'float'
+  Methods.cpp
+  Generating Code...
   Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Debug\Project2.exe

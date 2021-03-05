@@ -18,6 +18,12 @@ public:
 	int num_customers;
 	int num_depots;
 
+	// Data from the problem file
+	vector<int> mnt;
+	vector<int> dur_load;
+	vector<int> customer_data;
+	vector<int> depot_data;
+
 
 	// Members
 	vector<Individual> population;
@@ -38,7 +44,7 @@ public:
 	}
 
 	// Methods used in the class
-	void run();
+	void run(string file_name);
 	void generate_init_pop(int population_size);
 	void parent_selection();
 	void create_offspring();
@@ -48,7 +54,7 @@ public:
 	// Helper methods
 	void generate_individual();
 	void fitness();
-	void read_problem_file();
+	void read_problem_file(string file_name);
 
 };
 

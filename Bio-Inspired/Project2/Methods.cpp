@@ -8,8 +8,11 @@
 using namespace std;
 
 
-
-void GA::run() {
+// Brings everything together
+void GA::run(string file_name) {
+	
+	// Reads the specified problem file 
+	read_problem_file(file_name);
 
 }
 
@@ -46,18 +49,14 @@ void GA::fitness() {
 
 }
 
-void GA::read_problem_file() {
+void GA::read_problem_file(string file_name) {
 
 	// Helper stuff
 	int temp;
-	vector<int> mnt;
-	vector<int> dur_load;
-	vector<int> customer_data;
-	vector<int> depot_data;
 
 	// Open the file using relative path
 	ifstream problem_file;
-	problem_file.open("./Data/DataFiles/p01");
+	problem_file.open("./Data/DataFiles/" + file_name);
 
 	// Debugging purposes
 	if (!problem_file) std::cerr << "Could not open the file!" << std::endl;
@@ -97,4 +96,8 @@ void GA::read_problem_file() {
 	// Close the file
 	problem_file.close();
 
+	// Populate GA parameters 
+	num_vehicles = mnt[0];
+	num_customers = mnt[1];
+	num_depots = mnt[2];
 }
