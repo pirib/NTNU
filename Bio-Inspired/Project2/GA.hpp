@@ -13,17 +13,11 @@ public:
 	float mutation_prob;
 	float threshold;
 
-	// Parameters from the solution files
-	int num_vehicles;
-	int num_customers;
-	int num_depots;
-
 	// Data from the problem file
 	vector<int> mnt;
 	vector<int> dur_load;
 	vector<int> customer_data;
 	vector<int> depot_data;
-
 
 	// Members
 	vector<Individual> population;
@@ -31,9 +25,9 @@ public:
 
 	// Constructor
 	GA (	
-			float threshold, 
-			int population_size,			
-			float mutation_prob
+		float threshold, 
+		int population_size,			
+		float mutation_prob
 		) {
 
 		// Setting parameters for easy access 
@@ -45,7 +39,7 @@ public:
 
 	// Methods used in the class
 	void run(string file_name);
-	void generate_init_pop(int population_size);
+	void generate_init_pop();
 	void parent_selection();
 	void create_offspring();
 	void survival_selection();
@@ -55,6 +49,9 @@ public:
 	void generate_individual();
 	void fitness();
 	void read_problem_file(string file_name);
+
+	// Analytics
+	void print_simple();
 
 };
 

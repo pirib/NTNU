@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
 
-	GA t = GA(0.6, 111, 0.1);
+	GA t = GA(0.6, 1, 0.1);
 	t.run("p01");
 
 

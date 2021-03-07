@@ -1,0 +1,22 @@
+﻿  GA.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(42,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(60,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(78,22): warning C4018: '<': signed/unsigned mismatch
+  Individual.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(42,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(60,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(78,22): warning C4018: '<': signed/unsigned mismatch
+  Main.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(42,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(60,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(78,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(12,23): warning C4305: 'argument': truncation from 'double' to 'float'
+  Methods.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(42,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(60,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(78,22): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 360 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Release\Project2.exe
