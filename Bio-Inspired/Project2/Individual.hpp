@@ -2,6 +2,7 @@
 #include "Depot.h"
 #include <math.h>     
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -17,8 +18,14 @@ public:
 	// An individual consists of vectors with depots
 	vector<Depot> depots;
 
+	// Data for printing
+	vector<int> customer_data;
+
 	// Constructor that creates depots with vehicles in them from scratch
 	Individual( vector<int> mnt, vector<int> customer_data, vector<int> depot_data ) {
+
+		// Data for printing
+		this->customer_data = customer_data;
 
 		// Populate GA parameters 
 		num_vehicles = mnt[0];
@@ -72,8 +79,10 @@ public:
 
 	// Prints information about each depot
 	void print_data() {
+		
+		// Print information about the depots and which customers it serves
 		for (int d = 0; d < num_depots; d++) {
-			cout << "Depot ID:" << depots[d].id << "\n" << "Customers: ";
+			cout << "Depot ID:" << depots[d].id << " at " << depots[d].x << depots[d].y << "\n" << "Customers: ";
 
 			for (int c = 0; c < depots[d].customers.size(); c++) {
 				cout << "ID:" << depots[d].customers[c] << " ";
@@ -81,8 +90,35 @@ public:
 			cout << "\n";
 		}
 
-		cout << "\n\n\n";
+		cout << "\n\n";
 
+		// Printing the "grid"
+		
+		// Prep stuff
+		int row = 100;
+		int col = 100;
+
+		vector<vector<string>> vec(row, vector<string>(col, "*"));
+
+		for (int c = 0; c < num_customers; c++ ) {
+
+			vec[customer_data[c * 5 + 1]][customer_data[c * 5 + 2]] = to_string(customer_data[c * 5]);
+
+		}
+
+		for (int d = 0; d < num_depots; d++) {
+			vec[depots[d].x][depots[d].y] = "d";
+		}
+
+		// Prints the grid
+		
+		for (int v = 0; v < row; v++) {
+			for (int vv = 0; vv < col; vv++) {
+				cout << " " << vec[v][vv];
+			}
+			cout << "\n";
+		}
+		
 	}
 
 };

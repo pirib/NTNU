@@ -1,5 +1,5 @@
 ﻿  Individual.hpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(42,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(60,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(78,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(49,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(67,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(87,22): warning C4018: '<': signed/unsigned mismatch
   Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Debug\Project2.exe

@@ -17,20 +17,9 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
-	// Testing grounds	
-	/*
-	int row = 100;
-	int col = 100;
 
-	vector<vector<int>> vec(row, vector<int>(col, 0));
-	
-	for (int v = 0; v < row; v++) {
-		for (int vv = 0; vv < col; vv++) {
-			cout << vec[v][vv];
-		}
-		cout << "\n";
-	}
-	*/
+
+
 
 }
 
