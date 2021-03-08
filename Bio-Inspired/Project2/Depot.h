@@ -28,9 +28,9 @@ public:
 		this->id = id;
 		this->x = x;
 		this->y = y;
+
 		veh_dur = dur_load[0];
 		veh_load = dur_load[1];
-		
 	}
 
 	// Add one new customer to the end of the vector
@@ -52,25 +52,24 @@ public:
 		// Iterate through the customers, and add them to a route, or create a new route if the demand is not met
 		for (int c = 0; c < customers.size(); c++) {
 			
-			// Push the customer into the route
-			if (! routes[routes.size() - 1].add_customer(customers[c])) {
-								
-				// Since the customer was not added, we need to decrement the index, to re-assign the customer on the next step
-				c--;
+			// Push the customer into the route if that route's vechile's capacity can handle it
+			if (customers[c].demand <= routes.back().vehicle_capacity) {
+				routes.back().add_customer(customers[c]);
+			}
+			else {
 
-				// If we have available vehicles, deploy them
-				if (veh_used < n_vehicles) {
+				// If the depot has more disposable vehicles, create a new delivery route, and add the customer there.
+				if (routes.size() < n_vehicles ) {
 					add_route();
-
-					// If a customer was not added, it means that the vehicle has reached its max capacity
-					veh_used += 1;
+					routes.back().add_customer(customers[c]);
 				}
 				else {
 					cout << "ERROR:\n ";
 					cout << "The depot " << id << " does not have the capacity to handle the customers assigned! \n\n";
 					break;
 				}
-			}
+
+			}			
 				
 		}
 

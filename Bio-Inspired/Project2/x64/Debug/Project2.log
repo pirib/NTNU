@@ -1,0 +1,3 @@
+﻿  Individual.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(76,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\x64\Debug\Project2.exe

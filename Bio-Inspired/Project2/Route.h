@@ -20,16 +20,12 @@ public:
 
 	// Adds a customer to the route. 
 	// Returns true if the customer was added with no problem, returns false if any constraints were violated
-	bool add_customer(Customer customer) {
+	void add_customer(Customer customer) {
 
-		// Check with the constraints first
-		if (customer.demand > vehicle_capacity)
-			return false;
-		else {
-			// Reduce the capacity of the vehicle of this route and add the customer to the route
-			vehicle_capacity = vehicle_capacity - customer.demand;
-			customers.push_back(customer);
-		}
+		// Reduce the capacity of the vehicle of this route and add the customer to the route
+		vehicle_capacity -= customer.demand;
+		customers.push_back(customer);
+
 	}
 
 	// Currently unused

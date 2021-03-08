@@ -43,11 +43,11 @@ public:
 		for (int c = 0; c < num_customers; c++ ) {
 			
 			// Looking for the closest depot
-			int depot_distance = 999999;
+			float depot_distance = 999999;
 			int depot_index = 0;
 
 			for (int d = 0; d < num_depots; d++) {
-				int new_distance = calc_distance(depots[d], customer_data[1 + 5 * c], customer_data[2 + 5 * c] );
+				float new_distance = calc_distance(depots[d], customer_data[1 + 5 * c], customer_data[2 + 5 * c] );
 
 				// If the new distance is shorter, save that info
 				if (new_distance < depot_distance) {
@@ -65,7 +65,6 @@ public:
 		for (int d = 0; d < num_depots; d++) {
 			depots[d].schedule();
 		}
-
 
 		//print_simple();
 		//plot_data();
