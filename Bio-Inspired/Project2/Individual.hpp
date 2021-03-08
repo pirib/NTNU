@@ -57,12 +57,19 @@ public:
 			}
 
 			// The customer c is added to the depots route (the +1 is needed because ids start at 1)
-			depots[depot_index].add_customer(Customer(customer_data[5 * c], customer_data[1 + 5 * c], customer_data[2 + 5 * c]));
+			depots[depot_index].add_customer(Customer(customer_data[5 * c], customer_data[1 + 5 * c], customer_data[2 + 5 * c] , customer_data[4 + 5 * c]));
 
 		}
 
-		print_simple();
-		print_data();
+		// Now that everything is initialized, deplot the initial scheduler in Depots
+		for (int d = 0; d < num_depots; d++) {
+			depots[d].schedule();
+		}
+
+
+		//print_simple();
+		//plot_data();
+		print_routes();
 	}
 
 	// Returns euclidian distance between the Depot and customer coordinates c_x and c_y
@@ -77,10 +84,14 @@ public:
 	void print_simple() {
 		// Print information about the depots and which customers it serves
 		for (int d = 0; d < num_depots; d++) {
-			cout << "Depot ID:" << depots[d].id << " at " << depots[d].x << depots[d].y << "\n" << "Customers: ";
+			cout << "Depot ID:" << depots[d].id << " at " << depots[d].x << depots[d].y << "\n";
 
-			for (int c = 0; c < depots[d].customers.size(); c++) {
-				cout << "ID:" << depots[d].customers[c].id << " ";
+			for (int r = 0; r < depots[d].routes.size(); r++) {
+				cout << "Route " << r << "\n";
+				for (int c = 0; c < depots[d].routes[r].customers.size(); c++) {
+					cout << "ID:" << depots[d].routes[r].customers[c].id << " " << depots[d].routes[r].customers[c].demand << " ";
+				}
+				cout << "\n";
 			}
 			cout << "\n";
 		}
@@ -90,26 +101,46 @@ public:
 	}
 
 	// Saves the information about the individual into a file to be plotted by python
-	void print_data() {
+	void plot_data() {
 		
 		ofstream plot_file ("./plots/plot");
 
 		// Save information about the depots and which customers it serves
-		// The format is: DepotID, depotX, depotY, newline, 
-		// Route n: CustomerID, CustomerX, customerY, newline
-		// For every depot
+		// The format is: 
+		// DepotID, depotX, depotY, newline
+		// All customers:
+		// CustomerID, CustomerX, customerY, newline
+		// |
 		
 		for (int d = 0; d < num_depots; d++) {
 	
 			plot_file << depots[d].id << " " << depots[d].x << " " << depots[d].y << "\n";
 
-			for (int c = 0; c < depots[d].customers.size(); c++) {
-				plot_file << depots[d].customers[c].id << " " << depots[d].customers[c].x << " " << depots[d].customers[c].y << "\n";
+			for (int r = 0; r < depots[d].routes.size(); r++) {
+				for (int c = 0; c < depots[d].routes[r].customers.size(); c++) {
+					plot_file << depots[d].routes[r].customers[c].id << " " << depots[d].routes[r].customers[c].x << " " << depots[d].routes[r].customers[c].y << "\n";
+				}
+				plot_file << "|\n";
 			}
 
 			plot_file << "/";
 		}
 		
+	}
+
+	// Prints out routes per depot
+	void print_routes() {
+		for (int d = 0; d < num_depots; d++) {
+			cout << "Depot ID: " << depots[d].id << "\n";
+			for (int r = 0; r < depots[d].routes.size(); r++ ) {
+				cout << "Route number: " << r << " Clients: ";
+				for (int c = 0; c < depots[d].routes[r].customers.size(); c++) {
+					cout << depots[d].routes[r].customers[c].id << " ";
+				}
+				cout << "\n";
+			}
+			cout << "\n\n";
+		}
 	}
 
 };

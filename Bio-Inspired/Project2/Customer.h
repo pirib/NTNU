@@ -7,12 +7,14 @@ public:
 	int id;
 	int x;
 	int y;
+	int demand;
 
 	// Constructor
-	Customer(int id, int x, int y) {
+	Customer(int id, int x, int y, int demand) {
 		this->id = id;
 		this->x = x;
 		this->y = y;
+		this->demand = demand;
 	}
 
 };

@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="Customer.h" />
     <ClInclude Include="Depot.h" />
+    <ClInclude Include="Route.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

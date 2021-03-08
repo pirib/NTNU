@@ -42,20 +42,24 @@ depots_coord = []
 for depot in plot_data:
     depots_id.append( int(depot[0].split()[0]) )
     depots_coord.append( (int(depot[0].split()[1]) ,int(depot[0].split()[2]) ))
-    
+
+
 # Parsing customer data
 customer_id = []
 customer_coord = []
     
 for depot in plot_data:
     for customer in depot[1:]:
-        customer_id.append( int(customer.split()[0] ) )
-        customer_coord.append( (int(customer.split()[1]), int(customer.split()[2]) )  )
+        
+        if customer != "|":
+            
+            customer_id.append( int(customer.split()[0] ) )
+            customer_coord.append( (int(customer.split()[1]), int(customer.split()[2]) )  )
         
 # Clean up
 del customer
 del depot
-del plot_data
+
 
 
 # Plotting!
@@ -65,15 +69,37 @@ G = nx.Graph()
 color_map = []
 labels = {}
 
+
+# Adding depots
 for depot, coor in zip(depots_id, depots_coord):
     G.add_node(depot)
     color_map.append('red')
     labels[depot] = coor
     
+# Adding customers
 for customer, coor in zip(customer_id, customer_coord):
     G.add_node(customer)
     color_map.append('blue')
     labels[customer] = coor
+
+# Adding edges in between
+for depot in plot_data:
+    
+    i = 0
+    while i < len(depot) - 2:
+        
+        if depot[i+1] != '|':
+            G.add_edge( int(depot[i].split()[0]) , int(depot[i+1].split()[0]) )
+            i += 1
+        else:
+            G.add_edge( int(depot[i].split()[0]) , int(depot[0].split()[0]) )
+            i += 2
+            G.add_edge( int(depot[0].split()[0]) , int(depot[i].split()[0]) )
+        
+
+        
+# Clean up
+del coor, customer, depot, i         
 
 nx.draw(G,labels, node_color = color_map, node_size = 50)
 

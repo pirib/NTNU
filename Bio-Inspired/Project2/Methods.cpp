@@ -114,6 +114,5 @@ void GA::print_simple() {
 			cout << population[in].depots[d].id << " ";
 		}
 		
-
 	}
 }

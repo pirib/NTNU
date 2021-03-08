@@ -35,5 +35,8 @@
     <ClInclude Include="Customer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Route.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
