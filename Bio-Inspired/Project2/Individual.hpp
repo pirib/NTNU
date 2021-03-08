@@ -2,6 +2,7 @@
 #include "Depot.h"
 #include <math.h>     
 #include <iostream>
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -22,7 +23,7 @@ public:
 	vector<int> customer_data;
 
 	// Constructor that creates depots with vehicles in them from scratch
-	Individual( vector<int> mnt, vector<int> customer_data, vector<int> depot_data ) {
+	Individual(vector<int> mnt, vector<int> customer_data, vector<int> depot_data, vector<int> dur_load ) {
 
 		// Data for printing
 		this->customer_data = customer_data;
@@ -35,7 +36,7 @@ public:
 
 		// Add depots according to the problem
 		for (int depot = 0; depot < num_depots; depot++) {
-			depots.push_back(Depot(num_vehicles, depot_data[0 + 3*depot], depot_data[1 + 3*depot], depot_data[2 + 3 * depot]));
+			depots.push_back(Depot(num_vehicles, depot_data[0 + 3*depot], depot_data[1 + 3*depot], depot_data[2 + 3 * depot], dur_load));
 		}
 
 		// Add and sort customers into the depots based on Euclidian distance
@@ -56,9 +57,11 @@ public:
 			}
 
 			// The customer c is added to the depots route (the +1 is needed because ids start at 1)
-			depots[depot_index].add_customer(c+1);
+			depots[depot_index].add_customer(Customer(customer_data[5 * c], customer_data[1 + 5 * c], customer_data[2 + 5 * c]));
 
 		}
+
+		print_simple();
 		print_data();
 	}
 
@@ -69,54 +72,42 @@ public:
 
 
 	// Analytics
-	void print_simple() {
-		for (int d = 0; d < num_depots; d++) {
-		
-			cout << depots[d].id << " ";
-		}
-		cout << "\n";
-	}
 
-	// Prints information about each depot
-	void print_data() {
-		
+	// Prints the Depot IDs and assigned customers to it
+	void print_simple() {
 		// Print information about the depots and which customers it serves
 		for (int d = 0; d < num_depots; d++) {
 			cout << "Depot ID:" << depots[d].id << " at " << depots[d].x << depots[d].y << "\n" << "Customers: ";
 
 			for (int c = 0; c < depots[d].customers.size(); c++) {
-				cout << "ID:" << depots[d].customers[c] << " ";
+				cout << "ID:" << depots[d].customers[c].id << " ";
 			}
 			cout << "\n";
 		}
 
 		cout << "\n\n";
 
-		// Printing the "grid"
+	}
+
+	// Saves the information about the individual into a file to be plotted by python
+	void print_data() {
 		
-		// Prep stuff
-		int row = 100;
-		int col = 100;
+		ofstream plot_file ("./plots/plot");
 
-		vector<vector<string>> vec(row, vector<string>(col, "*"));
-
-		for (int c = 0; c < num_customers; c++ ) {
-
-			vec[customer_data[c * 5 + 1]][customer_data[c * 5 + 2]] = to_string(customer_data[c * 5]);
-
-		}
-
+		// Save information about the depots and which customers it serves
+		// The format is: DepotID, depotX, depotY, newline, 
+		// Route n: CustomerID, CustomerX, customerY, newline
+		// For every depot
+		
 		for (int d = 0; d < num_depots; d++) {
-			vec[depots[d].x][depots[d].y] = "d";
-		}
+	
+			plot_file << depots[d].id << " " << depots[d].x << " " << depots[d].y << "\n";
 
-		// Prints the grid
-		
-		for (int v = 0; v < row; v++) {
-			for (int vv = 0; vv < col; vv++) {
-				cout << " " << vec[v][vv];
+			for (int c = 0; c < depots[d].customers.size(); c++) {
+				plot_file << depots[d].customers[c].id << " " << depots[d].customers[c].x << " " << depots[d].customers[c].y << "\n";
 			}
-			cout << "\n";
+
+			plot_file << "/";
 		}
 		
 	}

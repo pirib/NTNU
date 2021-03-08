@@ -145,6 +145,7 @@
     <ClCompile Include="Methods.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Customer.h" />
     <ClInclude Include="Depot.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

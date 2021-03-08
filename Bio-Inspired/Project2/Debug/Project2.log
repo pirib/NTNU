@@ -1,5 +1,23 @@
-﻿  Individual.hpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(49,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(67,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(87,22): warning C4018: '<': signed/unsigned mismatch
+﻿  GA.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(50,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(70,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(82,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(106,22): warning C4018: '<': signed/unsigned mismatch
+  Individual.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(50,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(70,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(82,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(106,22): warning C4018: '<': signed/unsigned mismatch
+  Main.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(50,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(70,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(82,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(106,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(12,23): warning C4305: 'argument': truncation from 'double' to 'float'
+  Methods.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(50,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(70,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(82,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(106,22): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
   Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Debug\Project2.exe

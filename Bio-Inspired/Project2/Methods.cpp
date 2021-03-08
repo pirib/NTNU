@@ -18,9 +18,6 @@ void GA::run(string file_name) {
 	generate_init_pop();
 
 
-
-
-
 }
 
 
@@ -29,7 +26,7 @@ void GA::generate_init_pop( ) {
 
 	// Generate population_size number of individuals
 	for (int i = 0; i < population_size; i++) {
-		population.push_back( Individual( mnt, customer_data, depot_data ) );
+		population.push_back( Individual( mnt, customer_data, depot_data, dur_load ) );
 	}
 
 }
