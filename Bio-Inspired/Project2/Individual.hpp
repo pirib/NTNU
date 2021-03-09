@@ -1,12 +1,14 @@
 #include <vector> 
-#include "Depot.h"
 #include <math.h>     
 #include <iostream>
 #include <fstream>
 #include <string>
 
-using namespace std;
+#include "Depot.h"
+#include "gfun.h"
 
+using namespace std;
+using namespace gfun;
 
 class Individual {
 public:
@@ -47,7 +49,7 @@ public:
 			int depot_index = 0;
 
 			for (int d = 0; d < num_depots; d++) {
-				float new_distance = calc_distance(depots[d], customer_data[1 + 5 * c], customer_data[2 + 5 * c] );
+				float new_distance = distance(depots[d].x, depots[d].y, customer_data[1 + 5 * c], customer_data[2 + 5 * c] );
 
 				// If the new distance is shorter, save that info
 				if (new_distance < depot_distance) {
@@ -71,10 +73,6 @@ public:
 		print_routes();
 	}
 
-	// Returns euclidian distance between the Depot and customer coordinates c_x and c_y
-	float calc_distance(Depot depot, int c_x, int c_y) {
-		return sqrt( pow(depot.x - c_x , 2) + pow(depot.y - c_y, 2) );
-	}
 
 
 	// Analytics

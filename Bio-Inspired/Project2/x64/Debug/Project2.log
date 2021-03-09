@@ -1,3 +1,27 @@
-﻿  Individual.hpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.hpp(76,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+﻿  GA.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(9,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(106,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(110,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(114,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(116,10): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+  Individual.hpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(9,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(106,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(110,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(114,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(116,10): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+  Main.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(9,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(106,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(110,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(114,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(116,10): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(12,23): warning C4305: 'argument': truncation from 'double' to 'float'
+  Methods.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(9,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(106,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(110,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(114,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Route.h(116,10): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
   Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\x64\Debug\Project2.exe
