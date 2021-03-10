@@ -95,13 +95,16 @@ for depot in plot_data:
             G.add_edge( int(depot[i].split()[0]) , int(depot[0].split()[0]) )
             i += 2
             G.add_edge( int(depot[0].split()[0]) , int(depot[i].split()[0]) )
-        
+    
+    
+    # The edge between the last customer in the last route and depot
+    G.add_edge(int(depot[0].split()[0]) , int(depot[len(depot)-2].split()[0]))
 
         
 # Clean up
 del coor, customer, depot, i         
 
-nx.draw(G,labels, node_color = color_map, node_size = 50)
+nx.draw(G,labels , node_color = color_map, node_size = 50)
 
 
 

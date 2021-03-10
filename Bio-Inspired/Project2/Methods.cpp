@@ -17,6 +17,7 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
+	population[0].plot_data();
 
 }
 

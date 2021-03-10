@@ -70,7 +70,7 @@ public:
 				}
 			}			
 		}
-
+		
 		// Phase 2
 		for (int r = 0; r < routes.size(); r++) {
 
@@ -117,17 +117,14 @@ public:
 			
 
 		}
-
+		
 	}
+
+
 
 	// Adds a route with specified vechicle capcities
 	void add_route() {
 		routes.push_back(Route(veh_dur, veh_load, x, y));
-	}
-
-	//
-	bool better_solution() {
-
 	}
 
 };

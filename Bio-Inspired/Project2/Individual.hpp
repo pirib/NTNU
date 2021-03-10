@@ -68,9 +68,6 @@ public:
 			depots[d].schedule();
 		}
 
-		//print_simple();
-		//plot_data();
-		print_routes();
 	}
 
 
@@ -130,7 +127,7 @@ public:
 		for (int d = 0; d < num_depots; d++) {
 			cout << "Depot ID: " << depots[d].id << "\n";
 			for (int r = 0; r < depots[d].routes.size(); r++ ) {
-				cout << "Route number: " << r << " Clients: ";
+				cout << "Route number: " << r << " Length: "<< depots[d].routes[r].total_distance << "; Clients: ";
 				for (int c = 0; c < depots[d].routes[r].customers.size(); c++) {
 					cout << depots[d].routes[r].customers[c].id << " ";
 				}
