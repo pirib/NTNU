@@ -25,6 +25,9 @@ public:
 	// Data for printing
 	vector<int> customer_data;
 
+	// Default Cosntructor
+	Individual(){}
+
 	// Constructor that creates depots with vehicles in them from scratch
 	Individual(vector<int> mnt, vector<int> customer_data, vector<int> depot_data, vector<int> dur_load ) {
 

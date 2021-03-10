@@ -17,6 +17,8 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
+
+	// Analytics
 	for (int i = 0; i < population.size(); i++) {
 		population[i].plot_data(to_string(i));
 		population[i].print_routes();
@@ -53,13 +55,37 @@ void GA::mutation() {
 
 
 
-// Helpers
-void GA::generate_individual() {
+// Helpers ===================================================================
+
+// Returns the average fitness of the population
+float GA::average_fitness() {
+
+	float total_fitness = 0;
+
+	for (int i = 0; i < population.size(); i++) {
+		total_fitness += population[i].get_fitness();
+	}
+
+	return total_fitness / population.size();
+
 }
 
-void GA::fitness() {
+// Returns the individual with the best solution (e.g. min fitness)
+Individual GA::best_solution() {
+
+	// Assign the first individual as the current best one
+	Individual best_individual = population[0];
+
+	for (int i = 1; i < population.size(); i++) {
+		if (population[i].get_fitness() < best_individual.get_fitness()) {
+			best_individual = population[i];
+		}
+	}
+
+	return best_individual;
 
 }
+
 
 void GA::read_problem_file(string file_name) {
 
@@ -108,6 +134,8 @@ void GA::read_problem_file(string file_name) {
 	// Close the file
 	problem_file.close();
 }
+
+
 
 // Currently unused
 void GA::print_simple() {

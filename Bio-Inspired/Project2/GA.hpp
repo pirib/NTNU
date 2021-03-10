@@ -46,8 +46,8 @@ public:
 	void mutation();
 
 	// Helper methods
-	void generate_individual();
-	void fitness();
+	float average_fitness();
+	Individual best_solution();
 	void read_problem_file(string file_name);
 
 	// Analytics
