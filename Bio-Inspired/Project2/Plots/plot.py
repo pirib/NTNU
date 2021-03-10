@@ -9,7 +9,7 @@ import networkx as nx
 import matplotlib.pyplot as plt 
 
 # Open and read the file
-file = open("plot", "r")
+file = open("plot1", "r")
 raw_data = file.read().split("/")
 
 

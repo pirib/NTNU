@@ -10,6 +10,7 @@
 using namespace std;
 using namespace gfun;
 
+
 class Individual {
 public:
 
@@ -95,9 +96,11 @@ public:
 	}
 
 	// Saves the information about the individual into a file to be plotted by python
-	void plot_data() {
+	void plot_data(string filename = "") {
 		
-		ofstream plot_file ("./plots/plot");
+		string file = "./plots/plot";
+
+		ofstream plot_file(file.append(filename));
 
 		// Save information about the depots and which customers it serves
 		// The format is: 

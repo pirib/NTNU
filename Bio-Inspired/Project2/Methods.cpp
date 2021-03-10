@@ -1,9 +1,9 @@
-#include "GA.hpp"
-
 #include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
+
+#include "GA.hpp"
 
 using namespace std;
 
@@ -17,7 +17,8 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
-	population[0].plot_data();
+	for (int i = 0; i < population.size(); i++) 
+		population[i].plot_data(to_string(i));
 
 }
 
