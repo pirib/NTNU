@@ -17,9 +17,10 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
-	for (int i = 0; i < population.size(); i++) 
+	for (int i = 0; i < population.size(); i++) {
 		population[i].plot_data(to_string(i));
-
+		population[i].print_routes();
+	}
 }
 
 

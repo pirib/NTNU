@@ -100,7 +100,7 @@ public:
 	float calculate_total_distance( vector<Customer> customers_list) {
 
 		// Reset the total distance to 0
-		int new_distance = 0;
+		float new_distance = 0;
 
 		// Add distance between the depot to the first customer
 		new_distance += distance(d_x, d_y, customers_list[0].x, customers_list[0].y);

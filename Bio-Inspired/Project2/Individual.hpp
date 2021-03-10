@@ -36,7 +36,6 @@ public:
 		num_customers = mnt[1];
 		num_depots = mnt[2];
 
-
 		// Add depots according to the problem
 		for (int depot = 0; depot < num_depots; depot++) {
 			depots.push_back(Depot(num_vehicles, depot_data[0 + 3*depot], depot_data[1 + 3*depot], depot_data[2 + 3 * depot], dur_load));
@@ -61,7 +60,6 @@ public:
 
 			// The customer c is added to the depots route (the +1 is needed because ids start at 1)
 			depots[depot_index].add_customer(Customer(customer_data[5 * c], customer_data[1 + 5 * c], customer_data[2 + 5 * c] , customer_data[4 + 5 * c]));
-
 		}
 
 		// Now that everything is initialized, deplot the initial scheduler in Depots
@@ -71,6 +69,20 @@ public:
 
 	}
 
+	// Weighted-sum fitness scoring (adapted for this particular problem, takes into account only the total length of the )
+	float get_fitness() {
+
+		float total_travel = 0;
+
+		// Lopp through all routes of the depots, and sum over the total travel distance an individual solution proposes
+		for (int d = 0; d < depots.size(); d++) {
+			for (int r = 0; r < depots[d].routes.size(); r++) {
+				total_travel += depots[d].routes[r].total_distance;
+			}
+		}
+
+		return total_travel;
+	}
 
 
 	// Analytics
@@ -127,6 +139,9 @@ public:
 
 	// Prints out routes per depot
 	void print_routes() {
+
+		cout << "Fitness: " << get_fitness() << "\n";
+
 		for (int d = 0; d < num_depots; d++) {
 			cout << "Depot ID: " << depots[d].id << "\n";
 			for (int r = 0; r < depots[d].routes.size(); r++ ) {
