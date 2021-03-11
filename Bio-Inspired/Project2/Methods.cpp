@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "GA.hpp"
+#include "GA.h"
 
 using namespace std;
 
@@ -36,8 +36,13 @@ void GA::generate_init_pop( ) {
 
 }
 
-
+// Tournament selection 
 void GA::parent_selection() {
+
+
+	// Pick two random individuals
+
+	
 
 }
 
@@ -86,7 +91,7 @@ Individual GA::best_solution() {
 
 }
 
-
+// Reads the problem file
 void GA::read_problem_file(string file_name) {
 
 	// Helper stuff
@@ -136,14 +141,3 @@ void GA::read_problem_file(string file_name) {
 }
 
 
-
-// Currently unused
-void GA::print_simple() {
-	for (int in = 0; in < population_size; in++) {
-		for (int d = 0; d < population[in].num_depots; d++) {
-			
-			cout << population[in].depots[d].id << " ";
-		}
-		
-	}
-}

@@ -1,4 +1,4 @@
-using namespace std;
+#pragma once
 
 class Customer {
 public:

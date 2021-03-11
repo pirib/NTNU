@@ -1,15 +1,13 @@
-﻿  GA.hpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(10,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+﻿  GA.h
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Individual.hpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(10,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  gfun.cpp
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.cpp(11,13): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.cpp(22,25): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Individual.h
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Main.cpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(10,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(10,24): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(18,10): error C3861: 'choose': identifier not found
   Methods.cpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.h(10,14): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Generating Code...
-  Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\x64\Debug\Project2.exe

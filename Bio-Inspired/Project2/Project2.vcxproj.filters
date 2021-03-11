@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GA.hpp">
+    <ClCompile Include="GA.h">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Methods.cpp">
@@ -24,7 +24,10 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Individual.hpp">
+    <ClCompile Include="Individual.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gfun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

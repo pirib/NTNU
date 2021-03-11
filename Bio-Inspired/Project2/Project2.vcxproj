@@ -139,8 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GA.hpp" />
-    <ClCompile Include="Individual.hpp" />
+    <ClCompile Include="GA.h" />
+    <ClCompile Include="gfun.cpp" />
+    <ClCompile Include="Individual.h" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Methods.cpp" />
   </ItemGroup>

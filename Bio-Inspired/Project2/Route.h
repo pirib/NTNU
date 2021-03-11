@@ -1,11 +1,11 @@
 #include <vector>
 #include <iostream>
 
+#include "Customer.h"
 #include "gfun.h"
 
 using namespace std;
 using namespace gfun;
-
 
 class Route {
 public:
