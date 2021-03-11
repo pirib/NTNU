@@ -7,7 +7,8 @@ C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.cpp(22,25): warning C4244
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Main.cpp
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(18,10): error C3861: 'choose': identifier not found
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(14,24): warning C4305: 'argument': truncation from 'double' to 'float'
   Methods.cpp
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(118,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Generating Code...
+  Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\x64\Debug\Project2.exe

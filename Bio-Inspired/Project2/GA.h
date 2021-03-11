@@ -22,7 +22,7 @@ public:
 
 	// Members
 	vector<Individual> population;
-
+	vector<Individual> selected_population;
 
 	// Constructor
 	GA (	

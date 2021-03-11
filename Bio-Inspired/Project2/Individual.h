@@ -25,6 +25,8 @@ public:
 	// Data for printing
 	vector<int> customer_data;
 
+	// Cosntructors
+	
 	// Default Cosntructor
 	Individual(){}
 
@@ -71,6 +73,9 @@ public:
 		}
 
 	}
+
+
+	// Methods
 
 	// Weighted-sum fitness scoring (adapted for this particular problem, takes into account only the total length of the )
 	float get_fitness() {

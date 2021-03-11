@@ -4,9 +4,10 @@
 #include <fstream>
 
 #include "GA.h"
+#include "gfun.h"
 
 using namespace std;
-
+using namespace gfun;
 
 // Brings everything together
 void GA::run(string file_name) {
@@ -17,12 +18,17 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 
+	// Select parents
+	parent_selection();
 
 	// Analytics
+	/*
 	for (int i = 0; i < population.size(); i++) {
 		population[i].plot_data(to_string(i));
 		population[i].print_routes();
 	}
+	*/
+
 }
 
 
@@ -39,10 +45,43 @@ void GA::generate_init_pop( ) {
 // Tournament selection 
 void GA::parent_selection() {
 
+	vector<Individual> selected;
 
-	// Pick two random individuals
+	// Select parenst for reproduction. Selected pool is roughly 50% of the original population size
+	while (selected.size() < population_size/2) {
 
-	
+		// Pick two random individuals
+		int index1;
+		int index2;
+
+		while (true) {
+			// Pick two random indexes
+			index1 = interval(0, population_size - 1);
+			index2 = interval(0, population_size - 1);
+			if (index1 != index2) {
+				break;
+			}
+		}
+
+		// Pick the fittest one with prob 0.8
+		if (get_prob() < 0.8) {
+			if (population[index1].get_fitness() >= population[index1].get_fitness()) 
+				selected.push_back(population[index1]);
+			else 
+				selected.push_back(population[index2]);
+		}
+		// Else, pick one randomly
+		else {
+			if (get_prob() < 0.5) {
+				selected.push_back(population[index1]);
+			}
+			else {
+				selected.push_back(population[index2]);
+			}
+		}
+	}
+		
+	selected_population = selected;
 
 }
 
@@ -62,6 +101,8 @@ void GA::mutation() {
 
 // Helpers ===================================================================
 
+// Analytics
+ 
 // Returns the average fitness of the population
 float GA::average_fitness() {
 
@@ -90,6 +131,9 @@ Individual GA::best_solution() {
 	return best_individual;
 
 }
+
+
+// Others
 
 // Reads the problem file
 void GA::read_problem_file(string file_name) {
@@ -139,5 +183,4 @@ void GA::read_problem_file(string file_name) {
 	// Close the file
 	problem_file.close();
 }
-
 

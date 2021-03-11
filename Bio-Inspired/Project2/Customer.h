@@ -17,4 +17,8 @@ public:
 		this->demand = demand;
 	}
 
+	// Overloading equality to easily compare Customer objects
+	bool operator==(Customer A) {
+		return this->id == A.id;
+	}
 };
