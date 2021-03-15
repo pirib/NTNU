@@ -127,8 +127,6 @@ public:
 		
 	}
 
-
-
 	// Adds a route with specified vechicle capcities
 	void add_route() {
 		routes.push_back(Route(veh_dur, veh_load, x, y));

@@ -39,9 +39,6 @@ public:
 		// Reduce the capacity of the vehicle of this route and add the customer to the route
 		vehicle_capacity -= customer.demand;
 
-		// Calculate and add the distance this route covers
-		total_distance += distance(customer.x, customer.y, d_x, d_y);
-		
 		// Insert the new customer either into the back or front of the route
 		if ( not back ) 
 			customers.insert(customers.begin(), customer);
@@ -54,6 +51,20 @@ public:
 	}
 
 
+	// TODO direct all add_customer instances to this one
+	// Inserts customer at index
+	void insert_customer(Customer customer, int index) {
+		vehicle_capacity -= customer.demand;
+
+		total_distance += distance(customer.x, customer.y, d_x, d_y);
+
+		customers.insert(customers.begin() + index, customer);
+		
+		// Recalculate the total distance
+		total_distance = calculate_total_distance(customers);
+
+	}
+
 	// Removes customer at index index
 	void remove_customer_at(int index) {
 
@@ -64,29 +75,30 @@ public:
 		total_distance = calculate_total_distance(customers);
 	}
 
-	// Currently unused
 	// Remove and return the customer from the vector based on its ID
-	Customer remove_customer(int customer_id) {
+	void remove_customer(int customer_id) {
 
 		// Loop through the customers looking for the one with specified ID
 		for (int c = 0; c < customers.size(); c++) {
 			if (customers[c].id == customer_id) {
-
-				// Add the vehicla cpaacity back
+			
+				// Add the vehicle capacity back
 				vehicle_capacity += customers[c].demand;
 				
-				// Save the data about the customer
-				Customer removed_customer = customers[c];
-
-				// Remove the customer
-				customers.erase(customers.begin() + c);
-
-				// Return the previously saved one
-				return removed_customer;
+				if (customers.size() == 1) {
+					customers.clear();
+					total_distance = 0;
+					return;
+				} else {
+					// Remove the customer
+					customers.erase(customers.begin() + c);
+					calculate_total_distance(customers);
+				}
+				
+				
 			}
 		}
 
-		cout << "Shit went wrong in remove_custoer in Route object";
 	}
 
 	// Returns true if the capacity of the route is fine given that the customer specified will be added
@@ -97,6 +109,7 @@ public:
 		return false;
 	}
 
+	// Calculates the total distance a vehicle travels along this route
 	float calculate_total_distance( vector<Customer> customers_list) {
 
 		// Reset the total distance to 0
