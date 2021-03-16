@@ -8,7 +8,7 @@ import pandas as pd
 import random
 from math import log
 
-
+# The decision Tree algorithm, basically code of the pseudo-code from the book
 def decisionTreeLearning(examples, attributes, parent_examples):
     
     if not examples:
@@ -32,8 +32,7 @@ def decisionTreeLearning(examples, attributes, parent_examples):
 
     return tree
 
-
-
+# Plurality Value from the book
 def pluralityValue(examples):
     
     # Lazy way of doing it, but i know it is just two possiblities
@@ -47,6 +46,7 @@ def pluralityValue(examples):
     else: 
         return False
 
+# Importance function, that returns the gain based on the attribute in the examples set
 def importance(a, examples):
     
     # Using Tom Mitchell's books notation for entropy, because the book in syllabus is absolute garbage
@@ -88,6 +88,8 @@ def importance(a, examples):
     return B( p, n ) - remainder(a)
 
 # Helper functions
+
+# Argmax, nothing much to say here
 def argmax(attributes, examples, importance):
     
     # Temo values for comparison
@@ -104,18 +106,18 @@ def argmax(attributes, examples, importance):
 
 
 # Getting the data into dataframes
-train_df = pd.read_csv("./data/train.csv")
-test_df = pd.read_csv("./data/test.csv")
+train = pd.read_csv("./data/train.csv")
+test = pd.read_csv("./data/test.csv")
 
 
 # Ignoring the Name, TicketNumber, Passenger Fare, Cabin numbers, Embarked
 # These are very unlikely to influence the Survival rate - a more comprehesive explanation can be found in the pdf.
 
 # Get the attributes and then remove the unnecessary ones
-attributes = train_df.keys().tolist()
+attributes = train.keys().tolist()
 [attributes.remove(a) for a in ['Name', 'Fare', 'Ticket', 'Cabin', 'Embarked']]
 
-print( train_df )
+print( train )
 
 
 
