@@ -3,34 +3,51 @@ Created on Mon Mar 15 11:04:55 2021
 
 @author: babay
 """
-import pandas as pd
 
+
+import pandas as pd
+import copy
 import random
 from math import log
 
-# The decision Tree algorithm, basically code of the pseudo-code from the book
-def decisionTreeLearning(examples, attributes, parent_examples):
+class Tree():
     
-    if not examples:
-        return pluralityValue(parent_examples)
+    def __init__(self, label):
+        self.label = label
+        self.branches = []
 
-    elif examples.nunique() == 1:
-        return { "None" : bool(examples[0]) }
+
+# The decision Tree algorithm, python code of the pseudo-code from the book
+def decisionTreeLearning(examples, attributes, parent_examples):
+
+    if examples.empty:
+        return pluralityValue(parent_examples)
+    
+    elif examples["Survived"].nunique() == 1:
+        return examples["Survived"].unique()[0]       
+    
     elif not attributes:
         return pluralityValue(examples)
     
     else:
+
         A = argmax( attributes, examples, importance )
         
-        tree = A
-        
-        for a in A:
-            exs = None
-            subtree = decisionTreeLearning(exs, attributes.remove(A), examples)
-            # Stuff here        
-            tree.append(subtree)
+        tree = Tree(A)
 
-    return tree
+        for vk in examples[A].unique():
+            
+            exs = examples.loc[ (examples[A] == vk) ]
+
+            new_attributes = copy.deepcopy(attributes)
+            new_attributes.remove(A)  
+
+            subtree = decisionTreeLearning(exs, new_attributes , examples)
+            
+            tree.branches.append( [vk, subtree] )
+            
+        return tree
+
 
 # Plurality Value from the book
 def pluralityValue(examples):
@@ -51,11 +68,16 @@ def importance(a, examples):
     
     # Using Tom Mitchell's books notation for entropy, because the book in syllabus is absolute garbage
     # Total number of positives and negatives 
-    p = examples["Survived"].value_counts()[1]
-    n = examples["Survived"].value_counts()[0]
+    p = examples["Survived"].value_counts()[1] 
+    n = examples["Survived"].value_counts()[0] 
     
     # Calculating the entropy and remainder separately
     def B(p, n):
+        
+        # TODO
+        if (p + n == 0):
+            return 0
+        
         q = p / ( p + n )
         
         a = 0
@@ -76,10 +98,9 @@ def importance(a, examples):
         remainder = 0
         
         for v in examples[a].unique():
-            
-            pk = examples.loc[ (train_df[a] == v) & (train_df["Survived"] == 1) ]
-            nk = examples.loc[ (train_df[a] == v) & (train_df["Survived"] == 1) ]
-            
+            pk = len(examples.loc[ (train[a] == v) & (examples["Survived"] == 1) ].index)
+            nk = len(examples.loc[ (train[a] == v) & (examples["Survived"] == 1) ].index)
+
             remainder += (pk + nk)/ ( p + n ) * B (pk, nk)
             
         return remainder
@@ -92,21 +113,27 @@ def importance(a, examples):
 # Argmax, nothing much to say here
 def argmax(attributes, examples, importance):
     
-    # Temo values for comparison
+    # Temp values for comparison
     gain = 0
-    attribute_name = ""
+    attribute_name = None
     
     for a in attributes:
-        if importance(a) > gain:
-            gain = importance(a)
+        # TODO YOLO
+        if importance(a, examples) >= gain:
+            gain = importance(a, examples)
             attribute_name = a
+    
+    if attribute_name == None:
+        attribute_name = random.choice(attributes)
     
     return attribute_name
 
 
 
+# ============================================================================== Running the code 
+
 # Getting the data into dataframes
-train = pd.read_csv("./data/train.csv")
+train = pd.read_csv("./data/train.csv" )
 test = pd.read_csv("./data/test.csv")
 
 
@@ -115,10 +142,57 @@ test = pd.read_csv("./data/test.csv")
 
 # Get the attributes and then remove the unnecessary ones
 attributes = train.keys().tolist()
-[attributes.remove(a) for a in ['Name', 'Fare', 'Ticket', 'Cabin', 'Embarked']]
+[attributes.remove(a) for a in ['Name', 'Fare', 'Ticket', 'Cabin', 'Survived', 'Age', 'SibSp', 'Parch']]
 
-print( train )
+tree = decisionTreeLearning(train, attributes, pd.DataFrame())
 
+def test_tree(tree, example):
+    '''
+    Tests the tree with the provided example.
+    '''
+    root = tree
+
+    while(True):
+        found = False
+
+        for branch in root.branches:
+            if branch[0]==example[root.label]:
+                found = True
+
+                if isinstance(branch[1], Tree): root = branch[1]
+
+                else: return branch[1]
+
+        if(not found):
+
+            branch = root.branches[random.randint(0, len(root.branches)-1)]
+
+            if isinstance(branch[1], Tree) : root = branch[1]
+
+            else: return branch[1]
 
 
 # Running the code
+
+accuracy = 0
+i = 0
+for index, row in test.iterrows():
+    
+    guess = test_tree(tree, row)
+    
+    if guess == row['Survived']: 
+        accuracy += 1
+    i = index
+    
+print(f"Accuracy: {accuracy/i}")
+
+
+
+
+
+
+
+
+
+
+
