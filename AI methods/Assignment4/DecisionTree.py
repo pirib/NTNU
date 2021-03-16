@@ -4,6 +4,8 @@ Created on Mon Mar 15 11:04:55 2021
 @author: babay
 """
 import pandas as pd
+
+import random
 from math import log
 
 
@@ -32,8 +34,18 @@ def decisionTreeLearning(examples, attributes, parent_examples):
 
 
 
-def pluralityValue():
-    return
+def pluralityValue(examples):
+    
+    # Lazy way of doing it, but i know it is just two possiblities
+    n_true = examples["Survived"].value_counts()[1]
+    n_false = examples["Survived"].value_counts()[0] 
+    
+    if n_true == n_false: 
+        return bool(random.randint(0, 1))
+    elif n_true > n_false: 
+        return True
+    else: 
+        return False
 
 def importance(a, examples):
     
