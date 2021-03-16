@@ -83,7 +83,9 @@ def argmax(attributes, examples, importance):
     attribute_name = ""
     
     for a in attributes:
-        return
+        if importance(a) > gain:
+            gain = importance(a)
+            attribute_name = a
     
     return attribute_name
 
