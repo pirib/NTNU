@@ -10,6 +10,7 @@ import copy
 import random
 from math import log
 
+# A class of tree, adopted from older code of mine
 class Tree():
     
     def __init__(self, label):
@@ -17,7 +18,7 @@ class Tree():
         self.branches = []
 
 
-# The decision Tree algorithm, python code of the pseudo-code from the book
+# The decision Tree algorithm, basically python code of the pseudo-code from the book
 def decisionTreeLearning(examples, attributes, parent_examples):
 
     if examples.empty:
@@ -74,7 +75,6 @@ def importance(a, examples):
     # Calculating the entropy and remainder separately
     def B(p, n):
         
-        # TODO
         if (p + n == 0):
             return 0
         
@@ -108,8 +108,6 @@ def importance(a, examples):
     # Could have just returned the - remainder, and the did arcmin instead of arcmax, but whatever. Manually calculate B(Goal) it is always the same.
     return B( p, n ) - remainder(a)
 
-# Helper functions
-
 # Argmax, nothing much to say here
 def argmax(attributes, examples, importance):
     
@@ -118,15 +116,69 @@ def argmax(attributes, examples, importance):
     attribute_name = None
     
     for a in attributes:
-        # TODO YOLO
-        if importance(a, examples) >= gain:
-            gain = importance(a, examples)
+        imp = importance(a, examples)
+        if imp >= gain:
+            gain = imp
             attribute_name = a
     
     if attribute_name == None:
         attribute_name = random.choice(attributes)
     
     return attribute_name
+
+# A depth-first search in the tree, expects a row from a dataframe, returns the value of the leaf node.
+def test_tree(tree):
+    
+    # Does the actual looping
+    def int_test(row):
+        
+        root = tree
+        # Looping until we in a nutshell find the leaf node we are after
+        
+        while(True):
+    
+            hit = False
+            
+            # Loop through the branches
+            for branch in root.branches:
+                
+                # Found it
+                if branch[0]==row[root.label]:
+                    
+                    hit = True
+    
+                    if isinstance(branch[1], Tree): 
+                        root = branch[1]
+    
+                    else: 
+                        return branch[1]
+                    
+            # If did not find, carry on with the depth first search
+            if not hit:
+                
+                branch = root.branches[ random.randint(0, len(root.branches)-1) ]
+    
+                if isinstance(branch[1], Tree) : 
+                    root = branch[1]
+    
+                else: 
+                    return branch[1]
+
+    # Test the test df against the tree
+    correct = 0
+    total = 0
+    
+    for index, row in test.iterrows():
+        
+        guess = int_test(row)
+        
+        if guess == row["Survived"]: 
+            correct += 1
+
+        total = index
+    
+    print( correct, "/", total)
+    print( correct/total*100, "% correct")
 
 
 
@@ -137,60 +189,17 @@ train = pd.read_csv("./data/train.csv" )
 test = pd.read_csv("./data/test.csv")
 
 
-# Ignoring the Name, TicketNumber, Passenger Fare, Cabin numbers, Embarked
-# These are very unlikely to influence the Survival rate - a more comprehesive explanation can be found in the pdf.
-
-# Get the attributes and then remove the unnecessary ones
-attributes = train.keys().tolist()
-[attributes.remove(a) for a in ['Name', 'Fare', 'Ticket', 'Cabin', 'Survived', 'Age', 'SibSp', 'Parch']]
-
-tree = decisionTreeLearning(train, attributes, pd.DataFrame())
-
-def test_tree(tree, example):
-    '''
-    Tests the tree with the provided example.
-    '''
-    root = tree
-
-    while(True):
-        found = False
-
-        for branch in root.branches:
-            if branch[0]==example[root.label]:
-                found = True
-
-                if isinstance(branch[1], Tree): root = branch[1]
-
-                else: return branch[1]
-
-        if(not found):
-
-            branch = root.branches[random.randint(0, len(root.branches)-1)]
-
-            if isinstance(branch[1], Tree) : root = branch[1]
-
-            else: return branch[1]
 
 
+# Task 1
+# These are the only non-continious ones that are likely to influence the Survival rate - a more comprehesive explanation can be found in the pdf.
+attributes_t1 = ['Pclass', 'Sex']
+
+# Passing an empty dataframe as parent_examples for the checks not to throw an error
+tree = decisionTreeLearning(train, attributes_t1, pd.DataFrame())
+
+test_tree(tree)
 # Running the code
-
-accuracy = 0
-i = 0
-for index, row in test.iterrows():
-    
-    guess = test_tree(tree, row)
-    
-    if guess == row['Survived']: 
-        accuracy += 1
-    i = index
-    
-print(f"Accuracy: {accuracy/i}")
-
-
-
-
-
-
 
 
 
