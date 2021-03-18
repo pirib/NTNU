@@ -14,7 +14,7 @@ float gfun::distance(int x1, int y1, int x2, int y2) {
 // Get a random int between min and max intervals (max not inclusive)
 int gfun::interval(int min, int max)
 {
-	return min + (rand() % static_cast<int>(max - min));
+	return min + (rand() % static_cast<int>(max - min ));
 }
 
 // Returns a random value between 0 and 1

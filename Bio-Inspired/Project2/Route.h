@@ -33,7 +33,7 @@ public:
 		this->d_y = d_y;
 	}
 
-	// Adds a customer to the route. 
+	// Adds a customer to the back or end of the route 
 	void add_customer(Customer customer, bool back = true) {
 
 		// Reduce the capacity of the vehicle of this route and add the customer to the route
@@ -50,14 +50,13 @@ public:
 
 	}
 
-
-	// TODO direct all add_customer instances to this one
 	// Inserts customer at index
-	void insert_customer(Customer customer, int index) {
+	void insert_customer(Customer customer, int index ) {
+
+		// Reduce the capacity of the vehicle of this route and add the customer to the route
 		vehicle_capacity -= customer.demand;
 
-		total_distance += distance(customer.x, customer.y, d_x, d_y);
-
+		// Insert into the queue
 		customers.insert(customers.begin() + index, customer);
 		
 		// Recalculate the total distance
@@ -67,6 +66,9 @@ public:
 
 	// Removes customer at index index
 	void remove_customer_at(int index) {
+
+		// Add the vehicle capacity back
+		vehicle_capacity += customers[index].demand;
 
 		// Remove the customer at the index
 		customers.erase(customers.begin() + index);
@@ -93,6 +95,7 @@ public:
 					// Remove the customer
 					customers.erase(customers.begin() + c);
 					calculate_total_distance(customers);
+					return;
 				}
 				
 				

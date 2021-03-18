@@ -153,7 +153,7 @@ public:
 		for (int d = 0; d < num_depots; d++) {
 			cout << "Depot ID: " << depots[d].id << "\n";
 			for (int r = 0; r < depots[d].routes.size(); r++ ) {
-				cout << "Route number: " << r << " Length: "<< depots[d].routes[r].total_distance << "; Clients: ";
+				cout << "Route number: " << r << " Length: "<< depots[d].routes[r].total_distance << "; Capacity: " << depots[d].routes[r].vehicle_capacity << "; Clients: ";
 				for (int c = 0; c < depots[d].routes[r].customers.size(); c++) {
 					cout << depots[d].routes[r].customers[c].id << " ";
 				}
@@ -161,6 +161,18 @@ public:
 			}
 			cout << "\n\n";
 		}
+	}
+
+	// Returns True if there is no problem with feasibility in every route of every depot
+	bool is_feasible() {
+		for (Depot depot : depots) {
+			for (Route route : depot.routes) {
+				if (route.vehicle_capacity < 0) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 };

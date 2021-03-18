@@ -25,7 +25,7 @@ def decisionTreeLearning(examples, attributes, parent_examples):
         return pluralityValue(parent_examples)
     
     elif examples["Survived"].nunique() == 1:
-        return examples["Survived"].unique()[0]       
+        return bool(examples["Survived"].unique()[0])      # A bit of lazy way of doing it, but but 
     
     elif not attributes:
         return pluralityValue(examples)
@@ -39,14 +39,15 @@ def decisionTreeLearning(examples, attributes, parent_examples):
         for vk in examples[A].unique():
             
             exs = examples.loc[ (examples[A] == vk) ]
-
+            
             new_attributes = copy.deepcopy(attributes)
+
             new_attributes.remove(A)  
 
             subtree = decisionTreeLearning(exs, new_attributes , examples)
-            
+
             tree.branches.append( [vk, subtree] )
-            
+        
         return tree
 
 
@@ -67,6 +68,7 @@ def pluralityValue(examples):
 # Importance function, that returns the gain based on the attribute in the examples set
 def importance(a, examples):
     
+        
     # Using Tom Mitchell's books notation for entropy, because the book in syllabus is absolute garbage
     # Total number of positives and negatives 
     p = examples["Survived"].value_counts()[1] 
@@ -74,10 +76,7 @@ def importance(a, examples):
     
     # Calculating the entropy and remainder separately
     def B(p, n):
-        
-        if (p + n == 0):
-            return 0
-        
+                
         q = p / ( p + n )
         
         a = 0
@@ -98,10 +97,10 @@ def importance(a, examples):
         remainder = 0
         
         for v in examples[a].unique():
-            pk = len(examples.loc[ (train[a] == v) & (examples["Survived"] == 1) ].index)
-            nk = len(examples.loc[ (train[a] == v) & (examples["Survived"] == 1) ].index)
+            pk = len(examples.loc[ (examples[a] == v) & (examples["Survived"] == 1) ])
+            nk = len(examples.loc[ (examples[a] == v) & (examples["Survived"] == 0) ])
 
-            remainder += (pk + nk)/ ( p + n ) * B (pk, nk)
+            remainder += ( (pk + nk) / ( p + n ) ) * B (pk, nk)
             
         return remainder
         
@@ -117,7 +116,8 @@ def argmax(attributes, examples, importance):
     
     for a in attributes:
         imp = importance(a, examples)
-        if imp >= gain:
+
+        if imp > gain:
             gain = imp
             attribute_name = a
     
@@ -125,6 +125,7 @@ def argmax(attributes, examples, importance):
         attribute_name = random.choice(attributes)
     
     return attribute_name
+
 
 # A depth-first search in the tree, expects a row from a dataframe, returns the value of the leaf node.
 def test_tree(tree):
@@ -185,23 +186,24 @@ def test_tree(tree):
 # ============================================================================== Running the code 
 
 # Getting the data into dataframes
-train = pd.read_csv("./data/train.csv" )
-test = pd.read_csv("./data/test.csv")
 
+#train = pd.read_csv("./data/Restaurants.csv" )   # The Restauraunts dataset from the AIMA book for testing
+train = pd.read_csv("./train.csv" )
+test = pd.read_csv("./test.csv")
 
 
 
 # Task 1
 # These are the only non-continious ones that are likely to influence the Survival rate - a more comprehesive explanation can be found in the pdf.
-attributes_t1 = ['Pclass', 'Sex']
+attributes_t1 = ["Embarked","Sex", "Pclass"]
 
 # Passing an empty dataframe as parent_examples for the checks not to throw an error
 tree = decisionTreeLearning(train, attributes_t1, pd.DataFrame())
 
 test_tree(tree)
-# Running the code
 
 
 
+continious_values = ["Age", "SibSp", "Parch"]
 
 

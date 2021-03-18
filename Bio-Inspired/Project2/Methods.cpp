@@ -18,8 +18,9 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 	
-	for (int i = 0; i < 10 ; i++) {
-	// Select parents
+	
+	for (int i = 0; i < 1 ; i++) {
+		// Select parents
 		parent_selection();
 
 		// Create offspring using recombination 
@@ -32,9 +33,9 @@ void GA::run(string file_name) {
 		//cout << "Average fitness is: " << average_fitness() << endl;
 
 		best_solution().print_routes();
+
 	}
-
-
+	
 }
 
 
@@ -109,126 +110,235 @@ void GA::create_offspring() {
 		Individual p2 = selected_population[index2];
 
 		// Pick a depot for recombination
-		int index_depot = interval(0, mnt[2]);
+		int selected_depot = interval(0, mnt[2]);
 	
 		// Randomly select a route from each parent's depot
-		int index_route_1 = interval(0, p1.depots[index_depot].routes.size());
-		int index_route_2 = interval(0, p2.depots[index_depot].routes.size());
+		int selected_route_p1 = interval(0, p1.depots[selected_depot].routes.size());
+		int selected_route_p2 = interval(0, p2.depots[selected_depot].routes.size());
 
-		// Remove all customers that route1 in parent 1 is in parent2
-	
-		// Looping through customers in route1 for parent1
-		for (int c = 0; c < p1.depots[index_depot].routes[index_route_1].customers.size(); c++) {		
-		
-			// Removing that customer from all the routes
-			// Looping throughs Depots
-			for (int d = 0; d < p2.depots.size(); d++) {
-				// Looping through Routes
-				for (int r = 0; r < p2.depots[d].routes.size(); r++) {
-					// Loooping through customers in the routes
-					for (int cc = 0; cc < p2.depots[d].routes[r].customers.size(); cc ++) {
-						// Remove the specified customer
-						p2.depots[d].routes[r].remove_customer( p1.depots[index_depot].routes[index_route_1].customers[c].id );
-					}
-				}
-			}
-		
+		vector<Customer> customersToRemoveFromP2 = p1.depots[selected_depot].routes[selected_route_p1].customers;
+		vector<Customer> customersToRemoveFromP1 = p2.depots[selected_depot].routes[selected_route_p2].customers;
+
+		// Old Debugging, delete when done
+		/*
+		cout << endl << "Customers from p1 are: " << endl;
+		for (Customer customer : p1.depots[selected_depot].routes[selected_route_p1].customers) {
+			cout << customer.id << " ";
 		}
+		cout << endl;
+	
+		cout << endl << "Customers from p2 are: " << endl;
+		for (Customer customer : p2.depots[selected_depot].routes[selected_route_p2].customers) {
+			cout << customer.id << " ";
+		}
+		cout << endl;
+		*/
 
-		// Looping through customers in route2 of parent2
-		for (int c = 0; c < p2.depots[index_depot].routes[index_route_2].customers.size(); c++) {
+		// ================== Remove all customers that route1 in parent 1 is in parent2
+	
 
-			// Removing that customer from all the routes
-			// Looping throughs Depots
-			for (int d = 0; d < p1.depots.size(); d++) {
-				// Looping through Routes
-				for (int r = 0; r < p1.depots[d].routes.size(); r++) {
-					// Loooping through customers in the routes
-					for (int cc = 0; cc < p1.depots[d].routes[r].customers.size(); cc++) {
-						// Remove the specified customer
-						p1.depots[d].routes[r].remove_customer(p2.depots[index_depot].routes[index_route_2].customers[c].id);
-					}
+		// Removing that customer from all the routes
+		// Looping throughs Depots in p2
+		for (int d = 0; d < p2.depots.size(); d++) {
+			// Looping through Routes
+			for (int r = 0; r < p2.depots[d].routes.size(); r++) {
+				// Loooping through customers in the routes
+				for (Customer c : customersToRemoveFromP2) {
+					p2.depots[d].routes[r].remove_customer(c.id);
 				}
+				
 			}
 		}
+		
+		// Looping throughs Depots in p1
+		for (int d = 0; d < p1.depots.size(); d++) {
+			// Looping through Routes
+			for (int r = 0; r < p1.depots[d].routes.size(); r++) {
+				// Loooping through customers in the routes
+				for (Customer c : customersToRemoveFromP1) {
+					p1.depots[d].routes[r].remove_customer(c.id);
+				}
 
+			}
+		}
+		
+		// Old Debugging, delete when done
+		/*
+		cout << "Printing current routes for P1" << endl;
+		p1.print_routes();
+
+		cout << "Printing current routes for P2" << endl;
+		p2.print_routes();
+
+
+
+		cout << "++++++==+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+		*/
 	
+		// ================== Compute the insertion cost
+
+		// Struct for deciding where to insert the new customers
+		struct Loc {
+			int index;
+			bool feas;
+			int cost;
+			int route;
+		};
+
+		// Comparator function for sorting the insertion_positions
+		auto comp = [](Loc one, Loc two) {
+			return (one.cost < two.cost);
+		};
+
 		// For each customer in route1
-		for (Customer customer : p1.depots[index_depot].routes[index_route_1].customers) {
-
-			// Struct for deciding where to insert the new customers
-			struct Loc {
-				int index;
-				bool feas;
-				int cost;
-				int route;
-			};
-
-			// Comparator function for sorting the insertion_positions
-			auto comp = [](Loc one, Loc two) {
-				return (one.cost < two.cost);
-			};
+		for (Customer customer : p1.depots[selected_depot].routes[selected_route_p1].customers) {
 
 			// Temp vector to store all the information about insertion positions
 			vector<Loc> insertion_positions;
 		
-
 			// ============================== Finding the best spots for insertion
 
 			// For each route in p2
 			int index = 0;
-			for (Route route : p2.depots[index_depot].routes) {
+			for (Route route : p2.depots[selected_depot].routes) {
 			
 				// For each possible insertion position
 				for (int i = 0; i <= route.customers.size() ; i++ ) {
 
-				// Create a new insertion_position
-				insertion_positions.push_back( Loc() );
+					// Create a new insertion_position
+					insertion_positions.push_back( Loc() );
 
-				// Populate data
-				insertion_positions.back().feas = route.check_capacity(customer);
-				insertion_positions.back().index = i;
-				insertion_positions.back().route = index;
+					// Populate data
+					insertion_positions.back().feas = route.check_capacity(customer);
+					insertion_positions.back().index = i;
+					insertion_positions.back().route = index;
 
-				vector<Customer> temp = route.customers;
-				temp.insert(temp.begin() + i, customer);
+					vector<Customer> temp = route.customers;
+					temp.insert(temp.begin() + i, customer);
 
-				insertion_positions.back().cost = route.calculate_total_distance(temp);
+					insertion_positions.back().cost = route.calculate_total_distance(temp);
+				
 				}
+
 				// Lazy way of finding the route's index
 				index++;
+
 			}
 	
 			// Sort the list using lambda comp (the location that leads to smallest travel cost added is used).
 			sort(insertion_positions.begin(), insertion_positions.end(), comp);
 		
+
 			// =================== Insert the customers back into the individuals
 			
 			if (get_prob() <= 0.8) {
-				
+
+				// Choose the first feasible insertion location.
+				bool inserted = false;
+
+				for (Loc loc : insertion_positions) {
+					if (loc.feas) {
+						p2.depots[selected_depot].routes[insertion_positions[0].route].insert_customer(customer, insertion_positions[0].index);
+						inserted = true;
+						break;
+					}
+				}
+
+				// If there are no feasible locations, create a new route and add the customer in there
+				if (inserted == false) {
+					p2.depots[selected_depot].add_route();
+					p2.depots[selected_depot].routes.back().add_customer(customer);
+				}
 
 			}
+			// Just shove the customer into the
 			else {
-				p2.depots[index_depot].routes[insertion_positions[0].route].insert_customer(customer, 0);
-			}
-			
-			for (Loc loc : insertion_positions) {
-				if (loc.feas) {
-					p2.depots[index_depot].routes[insertion_positions[0].route].insert_customer(customer, insertion_positions[0].index);
-					break;
-				}	
+				p2.depots[selected_depot].routes[insertion_positions[0].route].insert_customer(customer, 0);
 			}
 			
 		}
 
+		// For each customer in route2
+		for (Customer customer : p2.depots[selected_depot].routes[selected_route_p2].customers) {
+
+			// Temp vector to store all the information about insertion positions
+			vector<Loc> insertion_positions;
+
+			// ============================== Finding the best spots for insertion
+
+			// For each route in p2
+			int index = 0;
+			for (Route route : p1.depots[selected_depot].routes) {
+
+				// For each possible insertion position
+				for (int i = 0; i <= route.customers.size(); i++) {
+
+					// Create a new insertion_position
+					insertion_positions.push_back(Loc());
+
+					// Populate data
+					insertion_positions.back().feas = route.check_capacity(customer);
+					insertion_positions.back().index = i;
+					insertion_positions.back().route = index;
+
+					vector<Customer> temp = route.customers;
+					temp.insert(temp.begin() + i, customer);
+
+					insertion_positions.back().cost = route.calculate_total_distance(temp);
+
+				}
+
+				// Lazy way of finding the route's index
+				index++;
+
+			}
+
+			// Sort the list using lambda comp (the location that leads to smallest travel cost added is used).
+			sort(insertion_positions.begin(), insertion_positions.end(), comp);
 
 
-		selected_population.push_back(p1);
-		selected_population.push_back(p2);
+			// =================== Insert the customers back into the individuals
+
+			if (get_prob() <= 0.8) {
+
+				// Choose the first feasible insertion location.
+				bool inserted = false;
+
+				for (Loc loc : insertion_positions) {
+					if (loc.feas) {
+						p1.depots[selected_depot].routes[insertion_positions[0].route].insert_customer(customer, insertion_positions[0].index);
+						inserted = true;
+						break;
+					}
+				}
+
+				// If there are no feasible locations, create a new route and add the customer in there
+				if (inserted == false) {
+					p1.depots[selected_depot].add_route();
+					p1.depots[selected_depot].routes.back().add_customer(customer);
+				}
+
+			}
+			// Just shove the customer into the
+			else {
+				p1.depots[selected_depot].routes[insertion_positions[0].route].insert_customer(customer, 0);
+			}
+
+		}
+
+
+		// Add the newly created children into the selection_population if they are feasible
+		if (p1.is_feasible())
+			selected_population.push_back(p1);
+		
+		if (p2.is_feasible())
+			selected_population.push_back(p2);
+
 	}
 }
 
 void GA::survival_selection() {
+	// TODO recombination can create infeasible individueals - remove them
 
 }
 
