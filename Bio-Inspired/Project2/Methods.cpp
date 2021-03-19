@@ -19,7 +19,7 @@ void GA::run(string file_name) {
 	generate_init_pop();
 	
 	
-	for (int i = 0; i < 2 ; i++) {
+	for (int i = 0; i < 100 ; i++) {
 		// Select parents
 		parent_selection();
 
@@ -28,8 +28,10 @@ void GA::run(string file_name) {
 	
 		population.clear(); 
 		population = selected_population;
+
+		mutation();
 		
-		//cout << "Population size: " << population.size();
+		//cout << "Population size: " << population.size() << endl;
 		//cout << "; Average fitness is: " << average_fitness() << endl;
 
 		//best_solution().print_routes();
@@ -90,7 +92,7 @@ void GA::parent_selection() {
 
 void GA::create_offspring() {
 
-	while (selected_population.size() <= population_size ) {
+	while (selected_population.size() < population_size ) {
 		// Recombination
 	
 		// Randomly pick parents for mating
@@ -170,24 +172,7 @@ void GA::create_offspring() {
 
 			}
 		}
-		
-
-
-		// Old Debugging, delete when done
-		/*
-		cout << "Printing routes after deletion for P1" << endl;
-		p1.print_routes();
-
-		cout << "Printing routes afte deletion for P2" << endl;
-		p2.print_routes();
-
-
-
-		cout << "++++++==+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-		*/
-
-
-	
+			
 		// ================== Compute the insertion cost
 
 		// Struct for deciding where to insert the new customers
@@ -364,14 +349,79 @@ void GA::create_offspring() {
 
 }
 
+void GA::mutation() {
+
+		// Loop through each individual and apply mutation
+		for (Individual & individual : selected_population ) { 
+			if (mutation_prob >= get_prob()) {
+
+				// Inter-Depot Mutation 
+	
+				// Choose one mutation with equal probability
+				int mut_type = interval(0,3);
+
+				// Reversal Mutation ===================================
+				if (mut_type == 0) {
+
+
+				}
+
+				// Single customer re-routing ===================================
+
+				// Swapping ===================================
+				if (mut_type == 2) {
+			
+					cout << endl << "Mutation! " << endl;
+			
+					// Pick a depot
+					int selected_depot = interval(0, mnt[2]);
+
+					// Return if there is only route in there
+					if (individual.depots[selected_depot].get_n_routes() <= 1) return;
+
+					// Pick two routes
+					int selected_route1 = 0;
+					int selected_route2 = 0;
+
+					while (selected_route1 == selected_route2) {
+						selected_route1 = interval(0, individual.depots[selected_depot].get_n_routes());
+						selected_route2 = interval(0, individual.depots[selected_depot].get_n_routes());
+					}
+
+					// Debugging
+					cout << "Selected routes are " << selected_route1 << " " << selected_route2 << endl;
+					cout << "Routes in the Depot " << individual.depots[selected_depot].id << " before mutation: " << endl;
+					individual.print_routes();
+
+					// Pick a customer in route1
+					int selected_customer_index = interval(0, individual.depots[selected_depot].routes[selected_route1].customers.size());
+					Customer customer = individual.depots[selected_depot].routes[selected_route1].customers[selected_customer_index];
+
+					// Check if feasibility maintained by this mutation
+					// Do not mutate if feasibility 
+					if (individual.depots[selected_depot].routes[selected_route2].check_capacity(customer) ) {
+						// Add that customer to route2
+						individual.depots[selected_depot].routes[selected_route2].add_customer(customer);
+
+						// Remove the customer from route1
+						individual.depots[selected_depot].routes[selected_route1].remove_customer_at(selected_customer_index);
+
+						cout << endl << "Routes in the Depot after mutation: " << endl;
+						individual.print_routes();
+					}
+				}
+			}
+
+		}
+
+}
+
 void GA::survival_selection() {
 	// TODO recombination can create infeasible individueals - remove them
 
 }
 
-void GA::mutation() {
 
-}
 
 
 

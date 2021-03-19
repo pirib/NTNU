@@ -127,9 +127,14 @@ public:
 		
 	}
 
-	// Adds a route with specified vechicle capcities
+	// Adds a route with specified vechicle capacities
 	void add_route() {
 		routes.push_back(Route(veh_dur, veh_load, x, y));
+	}
+
+	// Returns number of routes this depot has
+	int get_n_routes() {
+		return routes.size();
 	}
 
 };

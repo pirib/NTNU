@@ -70,14 +70,20 @@ public:
 		// Add the vehicle capacity back
 		vehicle_capacity += customers[index].demand;
 
-		// Remove the customer at the index
-		customers.erase(customers.begin() + index);
+		if (customers.size() == 1) {
+			customers.clear();
+			total_distance = 0;
+			return;
+		} else {
+			// Remove the customer from the customers list
+			customers.erase(customers.begin() + index);
+			total_distance = calculate_total_distance(customers);
+			return;
+		}
 
-		// Recalculate the total distance
-		total_distance = calculate_total_distance(customers);
 	}
 
-	// Remove and return the customer from the vector based on its ID
+	// Remove the customer from the vector based on its ID
 	void remove_customer(int customer_id) {
 
 		// Loop through the customers looking for the one with specified ID
@@ -94,11 +100,10 @@ public:
 				} else {
 					// Remove the customer
 					customers.erase(customers.begin() + c);
-					calculate_total_distance(customers);
+					total_distance = calculate_total_distance(customers);
 					return;
 				}
-				
-				
+					
 			}
 		}
 
