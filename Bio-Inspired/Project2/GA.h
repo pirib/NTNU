@@ -9,6 +9,7 @@ using namespace std;
 class GA {
 public:
 
+
 	// Parameters
 	int population_size;
 	float mutation_prob;
@@ -35,7 +36,6 @@ public:
 		this->population_size = population_size;
 		this->threshold = threshold;
 		this->mutation_prob = mutation_prob;
-	
 	}
 
 	// Methods used in the class

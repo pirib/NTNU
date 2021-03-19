@@ -31,10 +31,10 @@ void GA::run(string file_name) {
 
 		mutation();
 		
-		//cout << "Population size: " << population.size() << endl;
-		//cout << "; Average fitness is: " << average_fitness() << endl;
+		// cout << "Population size: " << population.size() << endl;
+		// cout << "; Average fitness is: " << average_fitness() << endl;
 
-		//best_solution().print_routes();
+		cout << best_solution().get_fitness() << endl;
 
 	}
 	
@@ -363,15 +363,44 @@ void GA::mutation() {
 				// Reversal Mutation ===================================
 				if (mut_type == 0) {
 
+					// Pick a depot
+					int selected_depot = interval(0, mnt[2]);
+
+					// Pick two points in the customers
+					int cut1 = 0;
+					int cut2 = 0;
+
+					while (cut1 == cut2) {
+						cut1 = interval(0, individual.depots[selected_depot].customers.size());
+						cut2 = interval(0, individual.depots[selected_depot].customers.size());
+					}
+
+					// Shuffle the customers in the depot 
+					auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
+
+					// Remove the old routes
+					individual.depots[selected_depot].routes.clear();
+
+					if (cut1 < cut2)
+						shuffle(begin( individual.depots[selected_depot].customers) + cut1, begin(individual.depots[selected_depot].customers) + cut2, rng);
+					else 
+						shuffle(begin( individual.depots[selected_depot].customers) + cut2, begin(individual.depots[selected_depot].customers) + cut1, rng);
+
+					// Run scheduler
+					individual.depots[selected_depot].schedule(false, false);
 
 				}
 
 				// Single customer re-routing ===================================
 
+				else if (mut_type == 1) {
+
+
+
+				}
+
 				// Swapping ===================================
-				if (mut_type == 2) {
-			
-					cout << endl << "Mutation! " << endl;
+				else  {
 			
 					// Pick a depot
 					int selected_depot = interval(0, mnt[2]);
@@ -388,11 +417,6 @@ void GA::mutation() {
 						selected_route2 = interval(0, individual.depots[selected_depot].get_n_routes());
 					}
 
-					// Debugging
-					cout << "Selected routes are " << selected_route1 << " " << selected_route2 << endl;
-					cout << "Routes in the Depot " << individual.depots[selected_depot].id << " before mutation: " << endl;
-					individual.print_routes();
-
 					// Pick a customer in route1
 					int selected_customer_index = interval(0, individual.depots[selected_depot].routes[selected_route1].customers.size());
 					Customer customer = individual.depots[selected_depot].routes[selected_route1].customers[selected_customer_index];
@@ -405,9 +429,6 @@ void GA::mutation() {
 
 						// Remove the customer from route1
 						individual.depots[selected_depot].routes[selected_route1].remove_customer_at(selected_customer_index);
-
-						cout << endl << "Routes in the Depot after mutation: " << endl;
-						individual.print_routes();
 					}
 				}
 			}

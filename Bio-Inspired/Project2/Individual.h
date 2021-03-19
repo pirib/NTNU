@@ -67,7 +67,7 @@ public:
 			depots[depot_index].add_customer(Customer(customer_data[5 * c], customer_data[1 + 5 * c], customer_data[2 + 5 * c] , customer_data[4 + 5 * c]));
 		}
 
-		// Now that everything is initialized, deplot the initial scheduler in Depots
+		// Now that everything is initialized, deploy the initial scheduler in Depots
 		for (int d = 0; d < num_depots; d++) {
 			depots[d].schedule();
 		}

@@ -43,7 +43,7 @@ public:
 
 	// Two part scheduler that sets the routes and takes into acount the duration of the routes + capacity of the car
 	// p 84
-	void schedule() {
+	void schedule(bool use_two_phases = true, bool randomize = true) {
 
 		int veh_used = 0;
 
@@ -52,10 +52,11 @@ public:
 
 		// Testing grounds
 
-		// Shuffle the customers in the route
-		auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
-		shuffle(customers.begin(), customers.end(), rng);
-
+		if (randomize) {
+			// Shuffle the customers in the route
+			auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
+			shuffle(customers.begin(), customers.end(), rng);
+		}
 		// END of testing grounds
 
 		// Phase 1
@@ -82,49 +83,47 @@ public:
 			}			
 		}
 		
+		if (use_two_phases) {
 		// Phase 2
-		for (int r = 0; r < routes.size(); r++) {
+			for (int r = 0; r < routes.size(); r++) {
 
-			if ( routes[r].customers.size() > 1) {
-				// Find the route to swap with
-				int next_route = r + 1;
+				if ( routes[r].customers.size() > 1) {
+					// Find the route to swap with
+					int next_route = r + 1;
 
-				// In case the index is outside the vector, swap with the the first route
-				if (next_route == routes.size()) {
-					next_route = 0;
-				}
+					// In case the index is outside the vector, swap with the the first route
+					if (next_route == routes.size()) {
+						next_route = 0;
+					}
 			
-				// Check if the move does not overburden the capacity of the next route 
-				if	( routes[next_route].check_capacity( routes[r].customers.back() ) ) {
+					// Check if the move does not overburden the capacity of the next route 
+					if	( routes[next_route].check_capacity( routes[r].customers.back() ) ) {
 
-					// temp copies for proposes route and next route
-					vector<Customer> prop_r = routes[r].customers;
-					vector<Customer> prop_next_r = routes[next_route].customers;
+						// temp copies for proposes route and next route
+						vector<Customer> prop_r = routes[r].customers;
+						vector<Customer> prop_next_r = routes[next_route].customers;
 
-					// Insert the last customer of prop_r into the first spot of prop_next_r
-					prop_next_r.insert(prop_next_r.begin() + 0, prop_r.back() );
+						// Insert the last customer of prop_r into the first spot of prop_next_r
+						prop_next_r.insert(prop_next_r.begin() + 0, prop_r.back() );
 
-					// Remove the last customer from the cur_r
-					prop_r.pop_back();
+						// Remove the last customer from the cur_r
+						prop_r.pop_back();
 
-					// Check if this change results in less distance travelled
-					if (routes[r].calculate_total_distance(routes[r].customers) + routes[next_route].calculate_total_distance(routes[next_route].customers) <
-						routes[r].calculate_total_distance(prop_next_r) +  routes[next_route].calculate_total_distance(prop_r ) ) {
+						// Check if this change results in less distance travelled
+						if (routes[r].calculate_total_distance(routes[r].customers) + routes[next_route].calculate_total_distance(routes[next_route].customers) <
+							routes[r].calculate_total_distance(prop_next_r) +  routes[next_route].calculate_total_distance(prop_r ) ) {
 					
-						// Append the last customer from r to the next route
-						routes[next_route].add_customer(routes[r].customers.back(), false);
+							// Append the last customer from r to the next route
+							routes[next_route].add_customer(routes[r].customers.back(), false);
 
-						// Remove the last customer from route r
-						routes[r].remove_customer_at( routes[r].customers.size() - 1 );
+							// Remove the last customer from route r
+							routes[r].remove_customer_at( routes[r].customers.size() - 1 );
 					
+						}
 					}
 				}
 			}
-			
-			
-
 		}
-		
 	}
 
 	// Adds a route with specified vechicle capacities
