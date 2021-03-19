@@ -19,7 +19,7 @@ void GA::run(string file_name) {
 	generate_init_pop();
 	
 	
-	for (int i = 0; i < 1 ; i++) {
+	for (int i = 0; i < 2 ; i++) {
 		// Select parents
 		parent_selection();
 
@@ -29,10 +29,10 @@ void GA::run(string file_name) {
 		population.clear(); 
 		population = selected_population;
 		
-		//cout << "Population size: " << population.size() << endl;
-		//cout << "Average fitness is: " << average_fitness() << endl;
+		//cout << "Population size: " << population.size();
+		//cout << "; Average fitness is: " << average_fitness() << endl;
 
-		best_solution().print_routes();
+		//best_solution().print_routes();
 
 	}
 	
@@ -86,12 +86,11 @@ void GA::parent_selection() {
 		}
 	}
 		
-
 }
 
 void GA::create_offspring() {
 
-	while (selected_population.size() < population_size ) {
+	while (selected_population.size() <= population_size ) {
 		// Recombination
 	
 		// Randomly pick parents for mating
@@ -104,7 +103,6 @@ void GA::create_offspring() {
 			index2 = interval(0, selected_population.size());
 		}
 
-
 		// Pick and copy two parents. These are the ones that will mate
 		Individual p1 = selected_population[index1];
 		Individual p2 = selected_population[index2];
@@ -116,8 +114,10 @@ void GA::create_offspring() {
 		int selected_route_p1 = interval(0, p1.depots[selected_depot].routes.size());
 		int selected_route_p2 = interval(0, p2.depots[selected_depot].routes.size());
 
-		vector<Customer> customersToRemoveFromP2 = p1.depots[selected_depot].routes[selected_route_p1].customers;
-		vector<Customer> customersToRemoveFromP1 = p2.depots[selected_depot].routes[selected_route_p2].customers;
+		// The customers that are to be deleted from p2 and p1
+		vector<Customer> customersFromP1 = p1.depots[selected_depot].routes[selected_route_p1].customers;
+		vector<Customer> customersFromP2 = p2.depots[selected_depot].routes[selected_route_p2].customers;
+		
 
 		// Old Debugging, delete when done
 		/*
@@ -132,10 +132,19 @@ void GA::create_offspring() {
 			cout << customer.id << " ";
 		}
 		cout << endl;
+
+		cout << "P1 before recombination " << endl;
+		p1.print_routes();
+		cout << endl;
+
+
+		cout << "P2 before recombination " << endl;
+		p2.print_routes();
+		cout << endl;
 		*/
 
 		// ================== Remove all customers that route1 in parent 1 is in parent2
-	
+
 
 		// Removing that customer from all the routes
 		// Looping throughs Depots in p2
@@ -143,7 +152,7 @@ void GA::create_offspring() {
 			// Looping through Routes
 			for (int r = 0; r < p2.depots[d].routes.size(); r++) {
 				// Loooping through customers in the routes
-				for (Customer c : customersToRemoveFromP2) {
+				for (Customer c : customersFromP1) {
 					p2.depots[d].routes[r].remove_customer(c.id);
 				}
 				
@@ -155,25 +164,29 @@ void GA::create_offspring() {
 			// Looping through Routes
 			for (int r = 0; r < p1.depots[d].routes.size(); r++) {
 				// Loooping through customers in the routes
-				for (Customer c : customersToRemoveFromP1) {
+				for (Customer c : customersFromP2) {
 					p1.depots[d].routes[r].remove_customer(c.id);
 				}
 
 			}
 		}
 		
+
+
 		// Old Debugging, delete when done
 		/*
-		cout << "Printing current routes for P1" << endl;
+		cout << "Printing routes after deletion for P1" << endl;
 		p1.print_routes();
 
-		cout << "Printing current routes for P2" << endl;
+		cout << "Printing routes afte deletion for P2" << endl;
 		p2.print_routes();
 
 
 
 		cout << "++++++==+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 		*/
+
+
 	
 		// ================== Compute the insertion cost
 
@@ -190,8 +203,9 @@ void GA::create_offspring() {
 			return (one.cost < two.cost);
 		};
 
-		// For each customer in route1
-		for (Customer customer : p1.depots[selected_depot].routes[selected_route_p1].customers) {
+		
+		// For each customer that needs to be inserted from P1
+		for (Customer customer : customersFromP1) {
 
 			// Temp vector to store all the information about insertion positions
 			vector<Loc> insertion_positions;
@@ -199,7 +213,7 @@ void GA::create_offspring() {
 			// ============================== Finding the best spots for insertion
 
 			// For each route in p2
-			int index = 0;
+			int route_index = 0;
 			for (Route route : p2.depots[selected_depot].routes) {
 			
 				// For each possible insertion position
@@ -211,9 +225,10 @@ void GA::create_offspring() {
 					// Populate data
 					insertion_positions.back().feas = route.check_capacity(customer);
 					insertion_positions.back().index = i;
-					insertion_positions.back().route = index;
+					insertion_positions.back().route = route_index;
 
 					vector<Customer> temp = route.customers;
+
 					temp.insert(temp.begin() + i, customer);
 
 					insertion_positions.back().cost = route.calculate_total_distance(temp);
@@ -221,7 +236,7 @@ void GA::create_offspring() {
 				}
 
 				// Lazy way of finding the route's index
-				index++;
+				route_index++;
 
 			}
 	
@@ -258,8 +273,9 @@ void GA::create_offspring() {
 			
 		}
 
+		
 		// For each customer in route2
-		for (Customer customer : p2.depots[selected_depot].routes[selected_route_p2].customers) {
+		for (Customer customer : customersFromP2) {
 
 			// Temp vector to store all the information about insertion positions
 			vector<Loc> insertion_positions;
@@ -326,6 +342,17 @@ void GA::create_offspring() {
 
 		}
 
+		// Old debugging code, remove when done
+		/*
+		cout << "P1 after recombination " << endl;
+		p1.print_routes();
+		cout << endl;
+
+		cout << "P2 after recombination " << endl;
+		p2.print_routes();
+		cout << endl;
+		*/
+
 
 		// Add the newly created children into the selection_population if they are feasible
 		if (p1.is_feasible())
@@ -333,8 +360,8 @@ void GA::create_offspring() {
 		
 		if (p2.is_feasible())
 			selected_population.push_back(p2);
-
 	}
+
 }
 
 void GA::survival_selection() {
