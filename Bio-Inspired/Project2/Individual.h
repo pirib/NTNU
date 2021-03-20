@@ -92,6 +92,134 @@ public:
 		return total_travel;
 	}
 
+	// Apply mutation to the individual
+	void mutation(float mutation_prob, default_random_engine & rng, int iteration) {
+
+		// Intra-depot mutation
+		if (mutation_prob >= get_prob()) {
+
+			// Choose one mutation with equal probability
+			int mut_type = interval(0, 2);
+
+			// Reversal Mutation ===================================
+			if (mut_type == 0) {
+
+				// Pick a depot
+				int selected_depot = interval(0, num_depots);
+
+				// Pick two points in the customers
+				int cut1 = 0;
+				int cut2 = 0;
+
+				while (cut1 == cut2) {
+					cut1 = interval(0, depots[selected_depot].customers.size());
+					cut2 = interval(0, depots[selected_depot].customers.size());
+				}
+
+				// Remove the old routes
+				depots[selected_depot].routes.clear();
+
+				if (cut1 < cut2)
+					shuffle(begin(depots[selected_depot].customers) + cut1, begin(depots[selected_depot].customers) + cut2, rng);
+				else
+					shuffle(begin(depots[selected_depot].customers) + cut2, begin(depots[selected_depot].customers) + cut1, rng);
+
+				// Run scheduler
+				depots[selected_depot].schedule(true, false);
+
+			}
+
+			// Single customer re-routing ===================================
+			/*
+			else if (mut_type == 1) {
+
+			}
+			*/
+
+			// Swapping ===================================
+			
+			else {
+				// Pick a depot
+				int selected_depot = interval(0, num_depots);
+
+				// Return if there is only route in there
+				if (depots[selected_depot].get_n_routes() <= 1) return;
+
+				// Pick two routes
+				int selected_route1 = 0;
+				int selected_route2 = 0;
+
+				while (selected_route1 == selected_route2) {
+					selected_route1 = interval(0, depots[selected_depot].get_n_routes());
+					selected_route2 = interval(0, depots[selected_depot].get_n_routes());
+				}
+
+				// Pick a customer in route
+				//cout << depots[selected_depot].routes[selected_route1].customers.size() << endl;
+				int selected_customer_index = interval(0, depots[selected_depot].routes[selected_route1].customers.size());
+				Customer customer = depots[selected_depot].routes[selected_route1].customers[selected_customer_index];
+
+				// Check if feasibility maintained by this mutation
+				// Do not mutate if feasibility is broken
+				if (depots[selected_depot].routes[selected_route2].check_capacity(customer)) {
+					// Add that customer to route2
+					depots[selected_depot].routes[selected_route2].add_customer(customer);
+
+					// Remove the customer from route1
+					depots[selected_depot].routes[selected_route1].remove_customer_at(selected_customer_index);
+
+					if (depots[selected_depot].routes[selected_route1].customers.empty()) depots[selected_depot].remove_route_at(selected_route1);
+				}
+			}
+			
+		}
+		
+		// Inter-depot
+		if ( iteration % 5 == 0 ) 
+			if (0.25 >= get_prob()) {
+				// Hold the borderline customers
+				vector <int> depot_list;
+
+				// Look for a borderline customer in randomly chosen depot
+
+				int selected_depot = interval(0, num_depots);
+
+				int selected_route = interval(0, depots[selected_depot].routes.size());
+
+				// For each customer, find a depot that is close by as well
+				for (Customer& customer : depots[selected_depot].customers) {
+					
+					depot_list.clear();
+
+					for (int d = 0; d < depots.size(); d++) {
+						if (depots[d].id != depots[selected_depot].id) {
+							float ratio = ((distance(customer.x, customer.y, depots[d].x, depots[d].y) - distance(customer.x, customer.y, depots[selected_depot].x, depots[selected_depot].y)) / distance(customer.x, customer.y, depots[selected_depot].x, depots[selected_depot].y));
+							
+							if (ratio <= 0.5) depot_list.push_back(d);
+						
+						}
+					}
+					
+					// We found another depot, hurray!
+					if (!depot_list.empty()) {
+
+						// Randomly pick one from the list
+						int new_depot = depot_list[0];
+						
+						// Push it into the new depot and schedule new routes
+						depots[new_depot].routes.clear();
+						depots[new_depot].add_customer(customer);
+						depots[new_depot].schedule(true, false);
+
+						// Remove the customer from the old depot
+						depots[selected_depot].remove_customer(customer);
+						clean_up();
+						break;
+					};
+				}
+			}
+			
+	}
 
 	// Analytics
 
@@ -163,6 +291,9 @@ public:
 		}
 	}
 
+
+	// Helpers
+
 	// Returns True if there is no problem with feasibility in every route of every depot
 	bool is_feasible() {
 		for (Depot depot : depots) {
@@ -173,6 +304,36 @@ public:
 			}
 		}
 		return true;
+	}
+
+	// Cleans up empty routes in all the depots
+	void clean_up() {
+		for (Depot & depot : depots) {
+			depot.remove_empty_routes();
+		}
+	}
+
+	// Overloading equality to easily compare Individual objects
+	bool operator==(Individual A) {
+		
+		string ind1 = "";
+		string ind2 = "";
+
+		for (Depot &depot : this->depots) {
+			for (Route &route : depot.routes) {
+				for (Customer &customer : route.customers)
+				ind1 += to_string(customer.id);
+			}
+		}
+
+		for (Depot& depot : A.depots) {
+			for (Route& route : depot.routes) {
+				for (Customer& customer : route.customers)
+					ind2 += to_string(customer.id);
+			}
+		}
+
+		return ind1 == ind2;
 	}
 
 };

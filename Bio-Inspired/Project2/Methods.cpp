@@ -12,37 +12,51 @@ using namespace gfun;
 // Brings everything together
 void GA::run(string file_name) {
 	
+	// Shuffle the customers in the depot 
+	auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
+
 	// Reads the specified problem file 
 	read_problem_file(file_name);
 
 	// Generate the inital population
 	generate_init_pop();
 	
-	
+	// Create generations
 	for (int i = 0; i < 100 ; i++) {
+
 		// Select parents
-		parent_selection();
+		parent_selection(false);
 
 		// Create offspring using recombination 
 		create_offspring();
-	
-		population.clear(); 
+
+		// Clean up the population
+		//population.insert(end(population), begin(selected_population), end(selected_population));
 		population = selected_population;
 
-		mutation();
+		// Clean up the old selected_population 
+		selected_population.clear();
+
+		for (Individual& individual : population)
+			individual.mutation(mutation_prob, rng, i);
 		
-		// cout << "Population size: " << population.size() << endl;
-		// cout << "; Average fitness is: " << average_fitness() << endl;
+		survival_selection(rng);
 
-		cout << best_solution().get_fitness() << endl;
-
+		// Adaptive mutation
+		// mutation_prob *= 0.9;
+		
+		//cout << "Average: " << average_fitness() << endl;
+		cout << i << "Best Solution so far: " << best_solution().get_fitness() << endl;
+		//cout << "Population size: " << population.size() << endl;
 	}
+
+	best_solution().plot_data();
 	
 }
 
 
 // Generates the initial population of size p_size
-void GA::generate_init_pop( ) {
+void GA::generate_init_pop() {
 
 	// Generate population_size number of individuals
 	for (int i = 0; i < population_size; i++) {
@@ -52,38 +66,65 @@ void GA::generate_init_pop( ) {
 }
 
 // Tournament selection 
-void GA::parent_selection() {
+void GA::parent_selection(bool binary) {
 
-	// Clean up the old selected_population 
-	selected_population.clear();
+	// Select parenst for reproduction. 
+	while (selected_population.size() < population_size) {
+		
+		// Binary tournament selection
+		if (binary) {
+		
+			// Pick two random individuals
+			int index1 = 0;
+			int index2 = 0;
 
-	// Select parenst for reproduction. Selected pool is roughly 50% of the original population size
-	while (selected_population.size() < population_size/2) {
+			while (index1 == index2) {
+				// Pick two random indexes
+				index1 = interval( 0, population.size() );
+				index2 = interval( 0, population.size());
+			}
 
-		// Pick two random individuals
-		int index1 = 0;
-		int index2 = 0;
 
-		while (index1 == index2) {
-			// Pick two random indexes
-			index1 = interval(0, population_size );
-			index2 = interval(0, population_size );
-		}
+			// Pick the fittest one with prob 0.8
+			if (get_prob() <= 0.8) {
+				if (population[index1].get_fitness() >= population[index1].get_fitness()) 
+					selected_population.push_back(population[index1]);
+				else 
+					selected_population.push_back(population[index2]);
+			}
+			// Else, pick one randomly
+			else {
+				if (get_prob() <= 0.5) {
+					selected_population.push_back(population[index1]);
+				}
+				else {
+					selected_population.push_back(population[index2]);
+				}
+			}
 
-		// Pick the fittest one with prob 0.8
-		if (get_prob() < 0.8) {
-			if (population[index1].get_fitness() >= population[index1].get_fitness()) 
-				selected_population.push_back(population[index1]);
-			else 
-				selected_population.push_back(population[index2]);
-		}
-		// Else, pick one randomly
+		} 
+		// k-Tournament selection with 10 spots
+
 		else {
-			if (get_prob() < 0.5) {
-				selected_population.push_back(population[index1]);
+			vector <Individual> selected;
+
+			// Get 10 random individuals into the selected
+			while (selected.size() <= 10) {
+				selected.push_back(population[interval(0, population.size())]);
+			}
+
+			// Comparison functiosn for finding the fittest ones
+			auto comp = [](Individual one, Individual two) {
+				return (one.get_fitness() < two.get_fitness());
+			};
+
+			// Pick the fittest one with prob 0.8
+			if (get_prob() <= 0.8) {
+				sort(begin(selected), end(selected), comp);
+				selected_population.push_back(selected[0]);
 			}
 			else {
-				selected_population.push_back(population[index2]);
+				selected_population.push_back( selected[interval(0, selected.size())] ); 
 			}
 		}
 	}
@@ -92,14 +133,16 @@ void GA::parent_selection() {
 
 void GA::create_offspring() {
 
-	while (selected_population.size() < population_size ) {
+	// Mating with incest prevention
+	while (selected_population.size() < population_size) {
+		
 		// Recombination
-	
+
 		// Randomly pick parents for mating
 		int index1 = 0;
 		int index2 = 0;
 
-		while (index1 == index2) {
+		while (index1 == index2 && selected_population[index1] == selected_population[index2] )  {
 			// Pick two random indexes
 			index1 = interval(0, selected_population.size());
 			index2 = interval(0, selected_population.size());
@@ -111,7 +154,7 @@ void GA::create_offspring() {
 
 		// Pick a depot for recombination
 		int selected_depot = interval(0, mnt[2]);
-	
+
 		// Randomly select a route from each parent's depot
 		int selected_route_p1 = interval(0, p1.depots[selected_depot].routes.size());
 		int selected_route_p2 = interval(0, p2.depots[selected_depot].routes.size());
@@ -119,7 +162,7 @@ void GA::create_offspring() {
 		// The customers that are to be deleted from p2 and p1
 		vector<Customer> customersFromP1 = p1.depots[selected_depot].routes[selected_route_p1].customers;
 		vector<Customer> customersFromP2 = p2.depots[selected_depot].routes[selected_route_p2].customers;
-		
+
 
 		// Old Debugging, delete when done
 		/*
@@ -128,7 +171,7 @@ void GA::create_offspring() {
 			cout << customer.id << " ";
 		}
 		cout << endl;
-	
+
 		cout << endl << "Customers from p2 are: " << endl;
 		for (Customer customer : p2.depots[selected_depot].routes[selected_route_p2].customers) {
 			cout << customer.id << " ";
@@ -157,10 +200,9 @@ void GA::create_offspring() {
 				for (Customer c : customersFromP1) {
 					p2.depots[d].routes[r].remove_customer(c.id);
 				}
-				
 			}
 		}
-		
+
 		// Looping throughs Depots in p1
 		for (int d = 0; d < p1.depots.size(); d++) {
 			// Looping through Routes
@@ -169,10 +211,9 @@ void GA::create_offspring() {
 				for (Customer c : customersFromP2) {
 					p1.depots[d].routes[r].remove_customer(c.id);
 				}
-
 			}
 		}
-			
+
 		// ================== Compute the insertion cost
 
 		// Struct for deciding where to insert the new customers
@@ -188,24 +229,24 @@ void GA::create_offspring() {
 			return (one.cost < two.cost);
 		};
 
-		
+
 		// For each customer that needs to be inserted from P1
 		for (Customer customer : customersFromP1) {
 
 			// Temp vector to store all the information about insertion positions
 			vector<Loc> insertion_positions;
-		
+
 			// ============================== Finding the best spots for insertion
 
 			// For each route in p2
 			int route_index = 0;
 			for (Route route : p2.depots[selected_depot].routes) {
-			
+
 				// For each possible insertion position
-				for (int i = 0; i <= route.customers.size() ; i++ ) {
+				for (int i = 0; i <= route.customers.size(); i++) {
 
 					// Create a new insertion_position
-					insertion_positions.push_back( Loc() );
+					insertion_positions.push_back(Loc());
 
 					// Populate data
 					insertion_positions.back().feas = route.check_capacity(customer);
@@ -217,20 +258,20 @@ void GA::create_offspring() {
 					temp.insert(temp.begin() + i, customer);
 
 					insertion_positions.back().cost = route.calculate_total_distance(temp);
-				
+
 				}
 
 				// Lazy way of finding the route's index
 				route_index++;
 
 			}
-	
+
 			// Sort the list using lambda comp (the location that leads to smallest travel cost added is used).
 			sort(insertion_positions.begin(), insertion_positions.end(), comp);
-		
+
 
 			// =================== Insert the customers back into the individuals
-			
+
 			if (get_prob() <= 0.8) {
 
 				// Choose the first feasible insertion location.
@@ -255,10 +296,9 @@ void GA::create_offspring() {
 			else {
 				p2.depots[selected_depot].routes[insertion_positions[0].route].insert_customer(customer, 0);
 			}
-			
+
 		}
 
-		
 		// For each customer in route2
 		for (Customer customer : customersFromP2) {
 
@@ -338,110 +378,85 @@ void GA::create_offspring() {
 		cout << endl;
 		*/
 
-
 		// Add the newly created children into the selection_population if they are feasible
-		if (p1.is_feasible())
+		if (p1.is_feasible()) {
+			p1.clean_up();
 			selected_population.push_back(p1);
-		
-		if (p2.is_feasible())
+		}
+
+		if (p2.is_feasible()) {
+			p2.clean_up();
 			selected_population.push_back(p2);
+		}
 	}
 
 }
 
-void GA::mutation() {
-
-		// Loop through each individual and apply mutation
-		for (Individual & individual : selected_population ) { 
-			if (mutation_prob >= get_prob()) {
-
-				// Inter-Depot Mutation 
+void GA::survival_selection(default_random_engine rng) {
 	
-				// Choose one mutation with equal probability
-				int mut_type = interval(0,3);
+	// Erase infeasible individuals
+	population.erase(
+		remove_if(
+			population.begin(), population.end(),
+			[](Individual & ind) { return ! ind.is_feasible(); }),
+		population.end());	
 
-				// Reversal Mutation ===================================
-				if (mut_type == 0) {
+	vector <Individual> unique;
+	unique.push_back(population[0]);
+	
 
-					// Pick a depot
-					int selected_depot = interval(0, mnt[2]);
+	// Keep only diverse population
+	/*
+	for (Individual& individual : population) {
+		bool is_copy = false;
+		for (Individual & ind : unique) {
 
-					// Pick two points in the customers
-					int cut1 = 0;
-					int cut2 = 0;
-
-					while (cut1 == cut2) {
-						cut1 = interval(0, individual.depots[selected_depot].customers.size());
-						cut2 = interval(0, individual.depots[selected_depot].customers.size());
-					}
-
-					// Shuffle the customers in the depot 
-					auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
-
-					// Remove the old routes
-					individual.depots[selected_depot].routes.clear();
-
-					if (cut1 < cut2)
-						shuffle(begin( individual.depots[selected_depot].customers) + cut1, begin(individual.depots[selected_depot].customers) + cut2, rng);
-					else 
-						shuffle(begin( individual.depots[selected_depot].customers) + cut2, begin(individual.depots[selected_depot].customers) + cut1, rng);
-
-					// Run scheduler
-					individual.depots[selected_depot].schedule(false, false);
-
-				}
-
-				// Single customer re-routing ===================================
-
-				else if (mut_type == 1) {
-
-
-
-				}
-
-				// Swapping ===================================
-				else  {
-			
-					// Pick a depot
-					int selected_depot = interval(0, mnt[2]);
-
-					// Return if there is only route in there
-					if (individual.depots[selected_depot].get_n_routes() <= 1) return;
-
-					// Pick two routes
-					int selected_route1 = 0;
-					int selected_route2 = 0;
-
-					while (selected_route1 == selected_route2) {
-						selected_route1 = interval(0, individual.depots[selected_depot].get_n_routes());
-						selected_route2 = interval(0, individual.depots[selected_depot].get_n_routes());
-					}
-
-					// Pick a customer in route1
-					int selected_customer_index = interval(0, individual.depots[selected_depot].routes[selected_route1].customers.size());
-					Customer customer = individual.depots[selected_depot].routes[selected_route1].customers[selected_customer_index];
-
-					// Check if feasibility maintained by this mutation
-					// Do not mutate if feasibility 
-					if (individual.depots[selected_depot].routes[selected_route2].check_capacity(customer) ) {
-						// Add that customer to route2
-						individual.depots[selected_depot].routes[selected_route2].add_customer(customer);
-
-						// Remove the customer from route1
-						individual.depots[selected_depot].routes[selected_route1].remove_customer_at(selected_customer_index);
-					}
-				}
+			if (individual == ind) {
+				is_copy = true;
+				break;
 			}
 
 		}
+		if (!is_copy) unique.push_back(individual);
+	}
+	
+	population.clear();
+	population = unique;
+	*/
+
+
+	// Elitism
+	/*
+	//sort(population.begin(), population.end(), comp);
+
+	for (int i = 0; i < population_size / 100; i++) {
+
+		int elite = interval(0, 20);
+
+		population[interval(0, population.size())] = population[elite];
+	}
+	*/
+
+
+
+	// To make life easier, sort the population 
+	// Comparator function for sorting 
+
+	auto comp = [](Individual one, Individual two) {
+		return (one.get_fitness() < two.get_fitness());
+	};
+
+	sort(population.begin(), population.end(), comp);
+
+
+
+	// Keep only the best ones - survival pressure
+	if (population.size() > population_size)
+		population.erase( population.begin() + population_size, population.end());
+
+	//shuffle(begin(population), end(population), rng);
 
 }
-
-void GA::survival_selection() {
-	// TODO recombination can create infeasible individueals - remove them
-
-}
-
 
 
 
@@ -468,13 +483,15 @@ Individual GA::best_solution() {
 
 	// Assign the first individual as the current best one
 	Individual best_individual = population[0];
+	float best_fitness = population[0].get_fitness();
 
-	for (int i = 1; i < population.size(); i++) {
-		if (population[i].get_fitness() < best_individual.get_fitness()) {
-			best_individual = population[i];
+	for (Individual& individual : population) {
+		float new_fitness = individual.get_fitness();
+		if (new_fitness < best_fitness) {
+			best_individual = individual;
+			best_fitness = new_fitness;
 		}
 	}
-
 	return best_individual;
 
 }

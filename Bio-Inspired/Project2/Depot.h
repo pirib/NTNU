@@ -22,6 +22,9 @@ public:
 	int veh_dur;
 	int veh_load;
 
+	// Randomness
+	default_random_engine rng;
+
 	// The order in the vector is the order of service as well
 	vector<Route> routes;
 
@@ -34,6 +37,9 @@ public:
 
 		veh_dur = dur_load[0];
 		veh_load = dur_load[1];
+
+		// Shuffle the customers in the route
+		rng = default_random_engine{ static_cast<unsigned int>(rand()) };
 	}
 
 	// Add one new customer to the end of the vector
@@ -45,6 +51,9 @@ public:
 	// p 84
 	void schedule(bool use_two_phases = true, bool randomize = true) {
 
+		// Remove old routes if still exist
+		routes.clear();
+
 		int veh_used = 0;
 
 		// Create an empty route with specified vehicle duration/load capabilities
@@ -53,9 +62,8 @@ public:
 		// Testing grounds
 
 		if (randomize) {
-			// Shuffle the customers in the route
-			auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
-			shuffle(customers.begin(), customers.end(), rng);
+
+			shuffle(begin(customers), end(customers), rng);
 		}
 		// END of testing grounds
 
@@ -71,14 +79,15 @@ public:
 			else {
 
 				// If the depot has more disposable vehicles, create a new delivery route, and add the customer there.
-				if (routes.size() < n_vehicles ) {
+				if (routes.size() <= n_vehicles ) {
 					add_route();
 					routes.back().add_customer(customers[c]);
 				}
 				else {
-					cout << "ERROR:\n ";
-					cout << "The depot " << id << " does not have the capacity to handle the customers assigned! \n\n";
-					break;
+					// Add a customer still
+					routes.back().add_customer(customers[c]);
+
+					// This will decrease the behicle capacity, but could be redeemed by phase 2
 				}
 			}			
 		}
@@ -118,7 +127,10 @@ public:
 
 							// Remove the last customer from route r
 							routes[r].remove_customer_at( routes[r].customers.size() - 1 );
-					
+
+							// Check if removal left the route empty, then remove the route
+							if (routes[r].customers.empty())
+								remove_empty_routes();
 						}
 					}
 				}
@@ -134,6 +146,59 @@ public:
 	// Returns number of routes this depot has
 	int get_n_routes() {
 		return routes.size();
+	}
+	
+	// Removes the customer from the customers list, and from the route that had that customer
+	void remove_customer(Customer customer) {
+
+		int i = 0;
+		
+		for (Customer& c : customers) {
+			if (c == customer) {
+				customers.erase(customers.begin() + i);
+				break;
+			}
+			i++;
+		}
+
+		// Find the customer at the route
+		int r = -1;
+		for (Route& route : routes) {
+			r++;
+			for (Customer& c : route.customers) {
+				if (c == customer) {
+					route.remove_customer(customer.id);
+					
+					if (route.customers.size() == 0) {
+						routes.erase( begin(routes) + r);
+					}
+
+					return;
+				}
+			}
+		}
+
+	}
+
+	// Removes the route at index
+	void remove_route_at(int index) {
+		routes.erase(begin(routes) + index);
+	}
+
+	// Removes all empty routes form the 
+	void remove_empty_routes() {
+
+		vector<int> routes_to_delete;
+
+		for (int r = 0; r < routes.size(); r++) {
+			if (routes[r].customers.size() == 0) {
+				routes_to_delete.insert(begin(routes_to_delete), r);
+			}
+		}
+
+		for (int r : routes_to_delete) {
+			remove_route_at(r);
+		}
 	}
 
 };

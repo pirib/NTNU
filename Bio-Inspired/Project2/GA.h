@@ -41,10 +41,9 @@ public:
 	// Methods used in the class
 	void run(string file_name);
 	void generate_init_pop();
-	void parent_selection();
+	void parent_selection(bool binary = true);
 	void create_offspring();
-	void survival_selection();
-	void mutation();
+	void survival_selection(default_random_engine rng);
 
 	// Helper methods
 	float average_fitness();
