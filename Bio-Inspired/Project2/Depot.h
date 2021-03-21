@@ -59,14 +59,11 @@ public:
 		// Create an empty route with specified vehicle duration/load capabilities
 		add_route();
 
-		// Testing grounds
-
+		// Randomize the routes
 		if (randomize) {
-
 			shuffle(begin(customers), end(customers), rng);
 		}
-		// END of testing grounds
-
+	
 		// Phase 1
 
 		// Iterate through the customers, and add them to a route, or create a new route if the demand is not met

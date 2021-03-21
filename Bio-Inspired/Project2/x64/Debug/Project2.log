@@ -1,17 +1,17 @@
 ﻿  GA.h
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(129,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(148,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(143,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(168,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(169,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(170,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(171,1): warning C4305: 'initializing': truncation from 'int' to 'float'
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(215,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(218,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(247,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(262,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(295,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(312,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(126,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(145,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(124,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(125,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(146,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(172,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(175,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(205,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(209,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(250,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(265,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(298,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(315,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\GA.h(46,17): warning C4244: 'initializing': conversion from '_Rep' to 'unsigned int', possible loss of data
           with
           [
@@ -21,68 +21,68 @@ C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\GA.h(46,17): warning C4244: 'i
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.cpp(13,13): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\gfun.cpp(24,25): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
   Individual.h
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(129,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(148,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(143,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(168,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(169,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(170,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(171,1): warning C4305: 'initializing': truncation from 'int' to 'float'
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(215,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(218,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(247,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(262,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(295,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(312,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(126,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(145,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(124,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(125,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(146,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(172,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(175,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(205,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(209,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(250,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(265,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(298,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(315,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Main.cpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(129,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(148,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(143,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(168,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(169,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(170,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(171,1): warning C4305: 'initializing': truncation from 'int' to 'float'
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(215,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(218,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(247,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(262,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(295,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(312,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(126,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(145,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(124,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(125,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(146,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(172,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(175,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(205,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(209,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(250,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(265,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(298,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(315,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\GA.h(46,17): warning C4244: 'initializing': conversion from '_Rep' to 'unsigned int', possible loss of data
           with
           [
               _Rep=std::chrono::system_clock::rep
           ]
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(16,25): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Main.cpp(16,26): warning C4305: 'argument': truncation from 'double' to 'float'
   Methods.cpp
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(129,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(148,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(143,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(168,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(169,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(170,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(171,1): warning C4305: 'initializing': truncation from 'int' to 'float'
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(215,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(218,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(247,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(262,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(295,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(312,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(126,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Depot.h(145,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(124,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(125,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(146,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(172,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(175,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(205,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(209,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(250,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(265,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(298,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Individual.h(315,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\GA.h(46,17): warning C4244: 'initializing': conversion from '_Rep' to 'unsigned int', possible loss of data
           with
           [
               _Rep=std::chrono::system_clock::rep
           ]
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(44,62): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(93,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(94,44): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(122,64): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(136,60): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(156,39): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(157,39): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(168,78): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(169,78): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(269,70): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(336,70): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(40,62): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(92,45): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(93,44): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(121,64): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(149,60): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(169,39): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(170,39): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(181,78): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(182,78): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(282,70): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\Methods.cpp(349,70): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   Generating Code...
   Project2.vcxproj -> C:\Users\babay\Desktop\NTNU\Bio-Inspired\Project2\x64\Debug\Project2.exe

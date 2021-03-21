@@ -22,15 +22,11 @@ void GA::run(string file_name) {
 	
 
 	// Create generations
-	for (int i = 0; i < 100 ; i++) {
+	for (int i = 0; i < 50 ; i++) {
 
 		// Clean up the old selected_population 
 		selected_population.clear();
 		parents.clear();
-
-		// Mutation
-		for (Individual& individual : population)
-			individual.mutation(mutation_prob, i);
 
 		// Select parents - populates parents vector
 		parent_selection(false);
@@ -42,18 +38,21 @@ void GA::run(string file_name) {
 		Individual best = best_solution();
 		for (int i = 0; i < population_size / 100; i++) {
 			selected_population[interval(0, selected_population.size())] = best;
-		}
-
+		}		
 		
 		// Replace the old population with new offspring + elitist parents
 		population.clear();
 		population = selected_population;
 
+		// Mutation
+		for (Individual& individual : population) individual.mutation(mutation_prob, i);
+
+
 		// Retain only good ones from the big chunk of the population
 		survival_selection();
 
 		// Decaying mutation
-		//mutation_prob *= 0.99;
+		// mutation_prob *= 0.99;
 		
 		//cout << "Average: " << average_fitness() << endl;
 		cout << i << "Best Solution so far: " << best_solution().get_fitness() << endl;
@@ -118,7 +117,7 @@ void GA::parent_selection(bool binary) {
 			vector <Individual> selected;
 
 			// Get 10 random individuals into the selected
-			while (selected.size() <= 5) {
+			while (selected.size() <= 10) {
 				selected.push_back(population[interval(0, population.size())]);
 			}
 
@@ -129,8 +128,22 @@ void GA::parent_selection(bool binary) {
 
 			// Pick the fittest one with prob 0.8
 			if (get_prob() <= 0.8) {
+				/*
 				sort(begin(selected), end(selected), comp);
 				parents.push_back(selected[0]);
+				*/
+				float best_fitness = selected[0].get_fitness();
+				Individual best_parent = selected[0];
+
+				for (int p = 1; p < selected.size(); p++) {
+					float new_fitness = selected[p].get_fitness();
+					if (new_fitness < best_fitness) {
+						best_parent = selected[p];
+						best_fitness = new_fitness;
+					}
+				}
+				parents.push_back( best_parent);
+
 			}
 			else {
 				parents.push_back( selected[interval(0, selected.size())] );
@@ -439,7 +452,7 @@ void GA::survival_selection() {
 	
 	// Keep only the best ones - survival pressure	
 	
-	sort(population.begin(), population.end(), comp);
+	//sort(population.begin(), population.end(), comp);
 
 	// Trim the eccess	
 	if (population.size() > population_size)
