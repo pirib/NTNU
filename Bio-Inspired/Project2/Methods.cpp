@@ -22,7 +22,7 @@ void GA::run(string file_name) {
 	
 
 	// Create generations
-	for (int i = 0; i < 200 ; i++) {
+	for (int i = 0; i < 100 ; i++) {
 
 		// Clean up the old selected_population 
 		selected_population.clear();
@@ -272,7 +272,6 @@ void GA::create_offspring() {
 
 				// Lazy way of finding the route's index
 				route_index++;
-
 			}
 
 			// Sort the list using lambda comp (the location that leads to smallest travel cost added is used).
@@ -437,27 +436,12 @@ void GA::survival_selection() {
 	auto comp = [](Individual& one, Individual& two) {
 		return (one.get_fitness() < two.get_fitness());
 	};
-
-
-	// Elitism
-	/*
-	Individual best = best_solution();
-
-	for (int i = 0; i < population_size / 100; i++) {
-
-		population[interval(0, population.size()) ] = best;
-
-	}
-	*/
-
-	//shuffle(begin(population), end(population), rng);
 	
 	// Keep only the best ones - survival pressure	
 	
 	sort(population.begin(), population.end(), comp);
 
-	// Trim the eccess
-	
+	// Trim the eccess	
 	if (population.size() > population_size)
 		population.erase( population.begin() + population_size, population.end());
 	

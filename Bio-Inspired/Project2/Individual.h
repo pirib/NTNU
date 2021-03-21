@@ -140,7 +140,7 @@ public:
 				// Testing Random positive reversal mutation
 				
 				// Pick a depot
-				int selected_depot = interval(0, num_depots);
+				int selected_depot = interval(0, depots.size());
 
 				// Copy the depot
 				Depot depot = depots[selected_depot];
@@ -161,7 +161,7 @@ public:
 
 			// Single customer re-routing ===================================
 			else if (mut_type == 1) {
-				/*
+				
 				// Randomly select a customer and remove it from the route 
 
 				// Variables for best new home for the customer
@@ -170,41 +170,42 @@ public:
 				int best_spot = interval(0, depots[best_depot].routes[best_route].customers.size());
 				float best_distance = 99999999;
 
-				// Pick a random customer from that depot
+				// Make a copy of the customer
 				Customer selected_customer = depots[best_depot].routes[best_route].customers[best_spot];
 
 				// Remove the customer (updates happen in the background)
 				depots[best_depot].remove_customer(selected_customer);
 
-				// Loop thourgh depots
-				for (int d = 0; d < depots.size(); d++) {
-					// Loop through routes
-					for (int r = 0; r < depots[d].routes.size(); r++) {
-						// If the route has the capacity to handle a new customer
-						if (depots[d].routes[r].check_capacity(selected_customer)) {
+				float old_dis = 9999999;
 
-							// Find the most feasible location in that route
-							for (int ii = 0; ii < depots[d].routes[r].customers.size(); ii++ ) {
-								Route route = depots[d].routes[r];
-								route.insert_customer(selected_customer, ii);
-								float new_distance = depots[d].routes[r].calculate_total_distance(route.customers);
-								if (best_distance > new_distance) {
-									best_depot = d;
-									best_route = r;
-									best_spot = ii;
-									best_distance = new_distance;
-								}
+				// Loop through all the routes
+				for (int r = 0; r < depots[best_depot].routes.size(); r++) {
+					
+					// If the route can handle a new customer
+					if (depots[best_depot].routes[r].check_capacity(selected_customer)) {
+						for (int c = 0; c < depots[best_depot].routes[r].customers.size(); c++) {
+							
+							// A copy of customers list
+							vector <Customer> temp = depots[best_depot].routes[r].customers;
+							temp.insert(begin(temp) + c, selected_customer);
+							float new_dis = depots[best_depot].routes[r].calculate_total_distance(temp);
+
+							if (old_dis > new_dis) {
+								best_route = r;
+								best_spot = c;
+								best_distance = new_dis;
 							}
+
 						}
 					}
 				}
-
+				
 				// Insert to best found location
 				depots[best_depot].routes[best_route].insert_customer(selected_customer, best_spot);
 
 				// And to the depot list
 				depots[best_depot].add_customer(selected_customer);
-				*/
+				
 			}
 			
 			// Random positive route reshuffle ===================================
@@ -243,7 +244,7 @@ public:
 			// Swapping ===================================
 			else {
 				// Pick a depot
-				int selected_depot = interval(0, num_depots);
+				int selected_depot = interval(0, depots.size());
 
 				// Return if there is only route in there
 				if (depots[selected_depot].get_n_routes() <= 1) return;
