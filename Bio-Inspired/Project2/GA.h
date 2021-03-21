@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include "Individual.h"
 
@@ -23,7 +24,11 @@ public:
 
 	// Members
 	vector<Individual> population;
+	vector <Individual> parents;
 	vector<Individual> selected_population;
+
+	// Randomness
+	default_random_engine rng;
 
 	// Constructor
 	GA (	
@@ -36,6 +41,11 @@ public:
 		this->population_size = population_size;
 		this->threshold = threshold;
 		this->mutation_prob = mutation_prob;
+
+		// Get the random seed in place
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		srand(seed);
+		this->rng = default_random_engine{ static_cast<unsigned int>(seed) };
 	}
 
 	// Methods used in the class
@@ -43,7 +53,7 @@ public:
 	void generate_init_pop();
 	void parent_selection(bool binary = true);
 	void create_offspring();
-	void survival_selection(default_random_engine rng);
+	void survival_selection();
 
 	// Helper methods
 	float average_fitness();

@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include "GA.h"
 #include "gfun.h"
@@ -12,8 +13,6 @@ using namespace gfun;
 // Brings everything together
 void GA::run(string file_name) {
 	
-	// Shuffle the customers in the depot 
-	auto rng = default_random_engine{ static_cast<unsigned int>(rand()) };
 
 	// Reads the specified problem file 
 	read_problem_file(file_name);
@@ -21,35 +20,46 @@ void GA::run(string file_name) {
 	// Generate the inital population
 	generate_init_pop();
 	
+
 	// Create generations
-	for (int i = 0; i < 100 ; i++) {
-
-		// Select parents
-		parent_selection(false);
-
-		// Create offspring using recombination 
-		create_offspring();
-
-		// Clean up the population
-		//population.insert(end(population), begin(selected_population), end(selected_population));
-		population = selected_population;
+	for (int i = 0; i < 200 ; i++) {
 
 		// Clean up the old selected_population 
 		selected_population.clear();
+		parents.clear();
 
+		// Mutation
 		for (Individual& individual : population)
-			individual.mutation(mutation_prob, rng, i);
-		
-		survival_selection(rng);
+			individual.mutation(mutation_prob, i);
 
-		// Adaptive mutation
-		// mutation_prob *= 0.9;
+		// Select parents - populates parents vector
+		parent_selection(false);
+
+		// Create offspring using recombination - populates selected_population
+		create_offspring();
+
+		// Elitism
+		Individual best = best_solution();
+		for (int i = 0; i < population_size / 100; i++) {
+			selected_population[interval(0, selected_population.size())] = best;
+		}
+
+		
+		// Replace the old population with new offspring + elitist parents
+		population.clear();
+		population = selected_population;
+
+		// Retain only good ones from the big chunk of the population
+		survival_selection();
+
+		// Decaying mutation
+		//mutation_prob *= 0.99;
 		
 		//cout << "Average: " << average_fitness() << endl;
 		cout << i << "Best Solution so far: " << best_solution().get_fitness() << endl;
 		//cout << "Population size: " << population.size() << endl;
 	}
-
+	cout << best_solution().get_fitness();
 	best_solution().plot_data();
 	
 }
@@ -60,7 +70,7 @@ void GA::generate_init_pop() {
 
 	// Generate population_size number of individuals
 	for (int i = 0; i < population_size; i++) {
-		population.push_back( Individual( mnt, customer_data, depot_data, dur_load ) );
+		population.push_back( Individual( mnt, customer_data, depot_data, dur_load, rng ) );
 	}
 
 }
@@ -69,7 +79,7 @@ void GA::generate_init_pop() {
 void GA::parent_selection(bool binary) {
 
 	// Select parenst for reproduction. 
-	while (selected_population.size() < population_size) {
+	while (parents.size() < population_size/2) {
 		
 		// Binary tournament selection
 		if (binary) {
@@ -84,21 +94,20 @@ void GA::parent_selection(bool binary) {
 				index2 = interval( 0, population.size());
 			}
 
-
 			// Pick the fittest one with prob 0.8
 			if (get_prob() <= 0.8) {
 				if (population[index1].get_fitness() >= population[index1].get_fitness()) 
-					selected_population.push_back(population[index1]);
+					parents.push_back(population[index1]);
 				else 
-					selected_population.push_back(population[index2]);
+					parents.push_back(population[index2]);
 			}
 			// Else, pick one randomly
 			else {
 				if (get_prob() <= 0.5) {
-					selected_population.push_back(population[index1]);
+					parents.push_back(population[index1]);
 				}
 				else {
-					selected_population.push_back(population[index2]);
+					parents.push_back(population[index2]);
 				}
 			}
 
@@ -109,22 +118,22 @@ void GA::parent_selection(bool binary) {
 			vector <Individual> selected;
 
 			// Get 10 random individuals into the selected
-			while (selected.size() <= 10) {
+			while (selected.size() <= 5) {
 				selected.push_back(population[interval(0, population.size())]);
 			}
 
 			// Comparison functiosn for finding the fittest ones
-			auto comp = [](Individual one, Individual two) {
+			auto comp = [](Individual & one, Individual & two) {
 				return (one.get_fitness() < two.get_fitness());
 			};
 
 			// Pick the fittest one with prob 0.8
 			if (get_prob() <= 0.8) {
 				sort(begin(selected), end(selected), comp);
-				selected_population.push_back(selected[0]);
+				parents.push_back(selected[0]);
 			}
 			else {
-				selected_population.push_back( selected[interval(0, selected.size())] ); 
+				parents.push_back( selected[interval(0, selected.size())] );
 			}
 		}
 	}
@@ -142,15 +151,15 @@ void GA::create_offspring() {
 		int index1 = 0;
 		int index2 = 0;
 
-		while (index1 == index2 && selected_population[index1] == selected_population[index2] )  {
+		while (index1 == index2 && parents[index1] == parents[index2] )  {
 			// Pick two random indexes
-			index1 = interval(0, selected_population.size());
-			index2 = interval(0, selected_population.size());
+			index1 = interval(0, parents.size());
+			index2 = interval(0, parents.size());
 		}
 
 		// Pick and copy two parents. These are the ones that will mate
-		Individual p1 = selected_population[index1];
-		Individual p2 = selected_population[index2];
+		Individual p1 = parents[index1];
+		Individual p2 = parents[index2];
 
 		// Pick a depot for recombination
 		int selected_depot = interval(0, mnt[2]);
@@ -225,7 +234,7 @@ void GA::create_offspring() {
 		};
 
 		// Comparator function for sorting the insertion_positions
-		auto comp = [](Loc one, Loc two) {
+		auto comp = [](Loc &one, Loc &two) {
 			return (one.cost < two.cost);
 		};
 
@@ -392,7 +401,7 @@ void GA::create_offspring() {
 
 }
 
-void GA::survival_selection(default_random_engine rng) {
+void GA::survival_selection() {
 	
 	// Erase infeasible individuals
 	population.erase(
@@ -401,12 +410,12 @@ void GA::survival_selection(default_random_engine rng) {
 			[](Individual & ind) { return ! ind.is_feasible(); }),
 		population.end());	
 
+
+	// Filter out the clones
+	/*
 	vector <Individual> unique;
 	unique.push_back(population[0]);
-	
 
-	// Keep only diverse population
-	/*
 	for (Individual& individual : population) {
 		bool is_copy = false;
 		for (Individual & ind : unique) {
@@ -415,7 +424,6 @@ void GA::survival_selection(default_random_engine rng) {
 				is_copy = true;
 				break;
 			}
-
 		}
 		if (!is_copy) unique.push_back(individual);
 	}
@@ -425,37 +433,34 @@ void GA::survival_selection(default_random_engine rng) {
 	*/
 
 
-	// Elitism
-	/*
-	//sort(population.begin(), population.end(), comp);
-
-	for (int i = 0; i < population_size / 100; i++) {
-
-		int elite = interval(0, 20);
-
-		population[interval(0, population.size())] = population[elite];
-	}
-	*/
-
-
-
-	// To make life easier, sort the population 
-	// Comparator function for sorting 
-
-	auto comp = [](Individual one, Individual two) {
+	// Comparator lambda for sorting 
+	auto comp = [](Individual& one, Individual& two) {
 		return (one.get_fitness() < two.get_fitness());
 	};
 
-	sort(population.begin(), population.end(), comp);
 
+	// Elitism
+	/*
+	Individual best = best_solution();
 
+	for (int i = 0; i < population_size / 100; i++) {
 
-	// Keep only the best ones - survival pressure
-	if (population.size() > population_size)
-		population.erase( population.begin() + population_size, population.end());
+		population[interval(0, population.size()) ] = best;
+
+	}
+	*/
 
 	//shuffle(begin(population), end(population), rng);
+	
+	// Keep only the best ones - survival pressure	
+	
+	sort(population.begin(), population.end(), comp);
 
+	// Trim the eccess
+	
+	if (population.size() > population_size)
+		population.erase( population.begin() + population_size, population.end());
+	
 }
 
 

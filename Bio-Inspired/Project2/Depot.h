@@ -29,7 +29,7 @@ public:
 	vector<Route> routes;
 
 	// Constructor
-	Depot(int n_vechicles, int id, int x, int y, vector<int> dur_load) {
+	Depot(int n_vechicles, int id, int x, int y, vector<int> dur_load, default_random_engine & rng) {
 		this->n_vehicles = n_vechicles;
 		this->id = id;
 		this->x = x;
@@ -39,7 +39,7 @@ public:
 		veh_load = dur_load[1];
 
 		// Shuffle the customers in the route
-		rng = default_random_engine{ static_cast<unsigned int>(rand()) };
+		this->rng = rng;
 	}
 
 	// Add one new customer to the end of the vector
@@ -148,7 +148,7 @@ public:
 		return routes.size();
 	}
 	
-	// Removes the customer from the customers list, and from the route that had that customer
+	// Removes the customer from the customers list, and from the route that had that customer. Update the customer list and recalculates the new route length
 	void remove_customer(Customer customer) {
 
 		int i = 0;
@@ -199,6 +199,15 @@ public:
 		for (int r : routes_to_delete) {
 			remove_route_at(r);
 		}
+	}
+
+	// Calculate the total distance travelled in this depot
+	float total_distance() {
+		float distance = 0;
+		for (Route route : routes) {
+			distance += route.calculate_total_distance(route.customers);
+		}
+		return distance;
 	}
 
 };

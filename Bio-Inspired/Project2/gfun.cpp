@@ -1,10 +1,12 @@
 #include <math.h> 
 #include <random>
 #include <vector>
+#include <chrono>
 
 #include "gfun.h"
 
 using namespace std;
+
 
 // Calculates and retusn euclidian distance
 float gfun::distance(int x1, int y1, int x2, int y2) {

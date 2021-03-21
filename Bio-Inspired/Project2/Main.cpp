@@ -13,9 +13,8 @@ int main()
 {
 	clock_t start, end;
 
-	GA t = GA(0.6, 100, 0.25);
+	GA t = GA(0.6, 400, 0.2);
 	
-
 	start = clock();
 	t.run("p01");
 	end = clock();
