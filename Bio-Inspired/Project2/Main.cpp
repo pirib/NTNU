@@ -16,7 +16,7 @@ int main()
 	GA t = GA(0.6, 400, 0.25);
 	
 	start = clock();
-	t.run("p01");
+	t.run("d1");
 	end = clock();
 
 	cout << endl << "Time spent: " <<  double(end - start) / CLOCKS_PER_SEC << endl; 

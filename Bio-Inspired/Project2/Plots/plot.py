@@ -64,6 +64,16 @@ del depot
 
 # Plotting!
 
+def color(i):
+    if i == 0:
+        return 'b'
+    elif i == 1:
+        return 'r'
+    elif i == 2:
+        return 'g'
+    else:
+        return 'y'
+    
 G = nx.Graph()
 
 color_map = []
@@ -85,26 +95,28 @@ for customer, coor in zip(customer_id, customer_coord):
 # Adding edges in between
 for depot in plot_data:
     
+    p = 0
     i = 0
     while i < len(depot) - 2:
-        
+
         if depot[i+1] != '|':
-            G.add_edge( int(depot[i].split()[0]) , int(depot[i+1].split()[0]) )
+            G.add_edge( int(depot[i].split()[0]) , int(depot[i+1].split()[0]), color = color(p) )
             i += 1
         else:
-            G.add_edge( int(depot[i].split()[0]) , int(depot[0].split()[0]) )
+            G.add_edge( int(depot[i].split()[0]) , int(depot[0].split()[0]), color = color(p)  )
             i += 2
-            G.add_edge( int(depot[0].split()[0]) , int(depot[i].split()[0]) )
-    
-    
+            G.add_edge( int(depot[0].split()[0]) , int(depot[i].split()[0]), color = color(p)  )
+
     # The edge between the last customer in the last route and depot
     G.add_edge(int(depot[0].split()[0]) , int(depot[len(depot)-2].split()[0]))
 
         
+edges = G.edges()   
+colors = nx.get_edge_attributes(G,'color').values()
 # Clean up
 del coor, customer, depot, i         
 
-nx.draw(G,labels , node_color = color_map, node_size = 50)
+nx.draw(G,labels , node_color = color_map, edge_color = colors, node_size = 50)
 
 
 

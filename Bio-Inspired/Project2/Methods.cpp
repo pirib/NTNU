@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <thread>
 
 #include "GA.h"
 #include "gfun.h"
@@ -13,23 +14,21 @@ using namespace gfun;
 // Brings everything together
 void GA::run(string file_name) {
 	
-
 	// Reads the specified problem file 
 	read_problem_file(file_name);
 
 	// Generate the inital population
 	generate_init_pop();
 	
-
 	// Create generations
-	for (int i = 0; i < 50 ; i++) {
+	for (int i = 0; i < 50; i++) {
 
 		// Clean up the old selected_population 
 		selected_population.clear();
 		parents.clear();
 
 		// Select parents - populates parents vector
-		parent_selection(false);
+		parent_selection(true);
 
 		// Create offspring using recombination - populates selected_population
 		create_offspring();
@@ -47,12 +46,11 @@ void GA::run(string file_name) {
 		// Mutation
 		for (Individual& individual : population) individual.mutation(mutation_prob, i);
 
-
 		// Retain only good ones from the big chunk of the population
 		survival_selection();
 
 		// Decaying mutation
-		// mutation_prob *= 0.99;
+		//mutation_prob *= 0.99;
 		
 		//cout << "Average: " << average_fitness() << endl;
 		cout << i << "Best Solution so far: " << best_solution().get_fitness() << endl;
@@ -60,7 +58,7 @@ void GA::run(string file_name) {
 	}
 	cout << best_solution().get_fitness();
 	best_solution().plot_data();
-	
+	best_solution().print_routes();
 }
 
 
@@ -459,7 +457,6 @@ void GA::survival_selection() {
 		population.erase( population.begin() + population_size, population.end());
 	
 }
-
 
 
 

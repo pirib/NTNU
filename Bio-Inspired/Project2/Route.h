@@ -33,6 +33,7 @@ public:
 		this->d_y = d_y;
 	}
 
+
 	// Adds a customer to the back or end of the route 
 	void add_customer(Customer customer, bool back = true) {
 

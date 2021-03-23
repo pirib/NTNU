@@ -102,13 +102,11 @@ public:
 	// Apply mutation to the individual
 	void mutation(float mutation_prob, int iteration) {
 
-		// Testing grounds
-		
 		// Intra-depot mutation
 		if (mutation_prob >= get_prob()) {
 
 			// Choose one mutation with equal probability
-			int mut_type = interval(0, 5);
+			int mut_type = interval(0, 4);
 
 			// Reversal Mutation =================================================
 			if (mut_type == 0) {
@@ -137,10 +135,8 @@ public:
 				depots[selected_depot].schedule(true, false);				
 			}
 
-			// Single customer re-routing ========================================
+			// Testing Random positive reversal mutation ========================================
 			else if (mut_type == 1) {
-
-				// Testing Random positive reversal mutation
 
 				// Pick a depot
 				int selected_depot = interval(0, depots.size());
@@ -197,9 +193,10 @@ public:
 					}
 				}
 			}
-
+			
+			/*
 			// Single customer re-routing ========================================
-			else if (mut_type == 3) {
+			else if (mut_type == 1) {
 
 				// Pick and make copy of a depot
 				int d_index = interval(0, depots.size());
@@ -226,11 +223,12 @@ public:
 
 						vector <Customer> temp = d.routes[ri].customers;
 						temp.insert( temp.begin() + i, c);
-							
+						float temp_dis = d.routes[ri].calculate_total_distance(temp);
+
 						// If this distance is a good one, save it
-						if (best_distance > d.routes[ri].calculate_total_distance( temp ) ) {
+						if (best_distance > temp_dis ) {
 							insertion_spot = i;
-							best_distance = d.routes[ri].calculate_total_distance(temp);
+							best_distance = temp_dis;
 							route = ri;
 						}
 					}					
@@ -243,7 +241,7 @@ public:
 				depots[d_index] = d;
 
 			}
-
+			*/
 			// Swapping ==========================================================
 			else {
 				// Pick a depot
@@ -283,7 +281,7 @@ public:
 		}
 		
 		// Inter-depot
-		if ( iteration % 10 == 0 ) 
+		if (iteration % 10 != 0) 
 			if (0.25 >= get_prob()) {
 				// Hold the borderline customers
 				vector <int> depot_list;
@@ -330,7 +328,8 @@ public:
 				}
 			
 			}
-	}
+	
+}
 
 	// Analytics
 
