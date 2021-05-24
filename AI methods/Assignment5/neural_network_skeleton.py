@@ -162,12 +162,12 @@ class NeuralNetwork:
         # Run through all the training data
         for x, y in zip(self.x_train, self.y_train):
             
-            # Calculate all the values in the network 
-            self.predict(x)            
-
             # Train epochs number of times each data sample
             for e in range(self.epochs):
-                
+
+                # Calculate all the values in the network 
+                self.predict(x)            
+
                 # Calculate output neuron delta
                 self.layers[-1][0].calc_delta(y)
                 
